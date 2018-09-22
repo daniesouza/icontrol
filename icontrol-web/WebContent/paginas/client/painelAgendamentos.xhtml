@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+<ui:composition template="/templates/client/templateClient.xhtml">			
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Agendamentos Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+		 			<p:commandButton value="Novo" action="#{agendamentoBean.novo()}" oncomplete="agendamento.show()" update=":formulario:mensagem,:formulario:gridAgendamento,:formulario:gridAgendamentoData,:formulario:tabViewatalho"></p:commandButton>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Nome" />
+					<p:inputText value="#{agendamentoBean.filtro.nome}"/>
+					
+					<h:outputText value="Descrição" />
+					<p:inputText value="#{agendamentoBean.filtro.descricao}" />					
+								
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{agendamentoBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{agendamentoBean.agendamentoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="#{agendamentoBean.registroPorPagina}" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+					
+					<!--  <p:column selectionMode="single" /> -->
+					
+					<p:column headerText="Nome">
+							<p:outputLabel value="#{item.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Descrição">
+							<h:outputText value="#{item.descricao}"/>
+					</p:column>
+					
+					<p:column headerText="Horário">
+							<h:outputText value="#{item.horario}">							
+								<f:convertDateTime locale="pt_BR" pattern="HH:mm" timeZone="GMT-3"/>
+							</h:outputText>
+							<h:outputText value=" -  "/>
+							<h:outputText value="Seg " rendered="#{item.segunda}"/>	
+							<h:outputText value="Ter " rendered="#{item.terca}"/>
+							<h:outputText value="Qua " rendered="#{item.quarta}"/>
+							<h:outputText value="Qui " rendered="#{item.quinta}"/>
+							<h:outputText value="Sex " rendered="#{item.sexta}"/>
+							<h:outputText value="Sab " rendered="#{item.sabado}"/>
+							<h:outputText value="Dom " rendered="#{item.domingo}"/>						
+					</p:column>					
+					
+					
+					<p:column> 
+						 <p:commandButton value="Alterar" action="#{agendamentoBean.editar()}" oncomplete="agendamento.show()" update=":formulario:mensagem,:formulario:gridAgendamento,:formulario:gridAgendamentoData,:formulario:tabViewatalho">
+            				  <f:setPropertyActionListener value="#{item}" target="#{agendamentoBean.entidade}" />						
+            			 </p:commandButton>
+					</p:column>
+				
+			
+				
+					<p:column>
+						 <p:commandButton value="Excluir" onclick="confirmation.show()">
+							  <f:setPropertyActionListener value="#{item}" target="#{agendamentoBean.entidade}" />	
+						 </p:commandButton>         	   
+					</p:column>
+					
+				</p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{agendamentoBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 					
+		    	 
+			 <p:dialog header="Agendamento"  widgetVar="agendamento" id="agendamento" resizable="true" width="680">  
+		   			
+		   		 			
+				<h:panelGrid columns="2" id="gridAgendamento">
+	
+			             <h:outputText value="Nome *:" />  
+			   			 <p:inputText  value="#{agendamentoBean.entidade.nome}" disabled="#{!empty agendamentoBean.entidade.id}"/>  
+
+			             <h:outputText value="Descrição:" />  
+			             <p:inputText value="#{agendamentoBean.entidade.descricao}" /> 
+			             
+						<h3>Horário</h3>  
+	    				<p:calendar value="#{agendamentoBean.entidade.horario}" locale="pt_BR"  pattern="HH:mm"  stepMinute="5" timeOnly="true" />
+			             			            			             
+				</h:panelGrid>
+
+				<h:panelGrid columns="8"  id="gridAgendamentoData">
+	
+					<h:column>			        
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.segunda}" />
+				        <h:outputText value="Segunda " />  
+					</h:column>
+					
+					<h:column>
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.terca}" />
+				        <h:outputText value="Terça " /> 
+				    </h:column> 
+				    
+				    <h:column>	  
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.quarta}" />
+				        <h:outputText value="Quarta " /> 
+				     </h:column> 
+				     
+				     <h:column>	  
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.quinta}" />
+				        <h:outputText value="Quinta " /> 
+				     </h:column>   
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.sexta}" />
+				        <h:outputText value="Sexta " /> 
+				    <h:column>    
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.sabado}" />
+				        <h:outputText value="Sabado " /> 
+				    </h:column>
+				    
+				    <h:column>	    
+				        <p:selectBooleanCheckbox value="#{agendamentoBean.entidade.domingo}" />
+				        <h:outputText value="Domingo " /> 
+					</h:column>
+				
+				</h:panelGrid>	
+								
+				<p:tabView id="tabViewatalho">
+																	
+						<p:tab title="Atalhos">
+							
+							<p:pickList id="pickListAtalho" value="#{agendamentoBean.atalhos}"
+								converter="#{genericConverter}" var="atalho"
+								iconOnly="true" itemValue="#{atalho}"
+								itemLabel="#{atalho.id} - #{atalho.nome}"
+								onTransfer="atualizarAtalho()">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Atalho" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Atalhos Adicionados" />
+								</f:facet>
+							</p:pickList>
+						</p:tab>						
+						
+					</p:tabView>
+
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{agendamentoBean.salvarOuAtualizar()}" oncomplete="validarFecharModal(args,agendamento)" 
+				update=":formulario:mensagem,:formulario:tabela,:formulario:gridAgendamento,:formulario:gridAgendamentoData"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

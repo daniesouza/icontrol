@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+      
+	
+	<p:panel>  
+	
+		<div>	
+			
+			<h3 align="center">#{msgs.sistema_ischool}!!! </h3>
+		
+		</div>
+	
+		<div align="right"> 
+		
+			 <h:panelGrid columns="2">	
+			    	
+		    	Bem vindo <p:outputLabel value="#{loginControllerBean.usuarioLogado.usuario}" title="Alterar Dados Cadastrais"  update=":formulario:alterarUsuario" oncomplete="alterarUsuario.show()"/>	
+
+		    	<p:commandLink value="Sair" title="Sair"  action="#{loginControllerBean.logOut}" ajax="false"/>
+		    	
+		    </h:panelGrid>
+		    	    
+	    </div>
+	
+	 </p:panel> 
+	 
+		<p:dialog header="Detalhes do Usuario" widgetVar="alterarUsuario" id="alterarUsuario" resizable="false" width="350" modal="true" closable="true">  
+	   		
+	   		
+	        <h:panelGrid columns="2" cellpadding="4">  
+	   
+	             <h:outputText value="Nome" />
+	             <p:inputText value="#{loginControllerBean.entidade.nome}"> </p:inputText>
+	             <h:outputText value="Enredeço" />
+	             <p:inputText value="#{loginControllerBean.entidade.endereco}"> </p:inputText>
+	             <h:outputText value="Telefone" />
+	             <p:inputMask mask="(99)-99999-9999"  value="#{loginControllerBean.usuarioLogado.telefone}"> </p:inputMask>
+	               
+	        </h:panelGrid>     
+	
+			 <center>		          
+				  <p:commandButton  value="OK" title="OK" action="#{loginControllerBean.salvarOuAtualizar()}" oncomplete="alterarUsuario.hide()" update=":formulario:mensagem"  /> 
+	         </center>
+	     </p:dialog> 	 
+	     
+</html>

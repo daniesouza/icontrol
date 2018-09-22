@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+
+ 	<ui:composition template="/templates/adminClient/templateAdminClient.xhtml">
+	
+		<ui:define name="corpoPagina">
+			<h:form>
+				
+				<center>
+				
+					<br/>
+					<br/>
+					<br/>
+					
+				
+					<h:panelGrid columns="5" cellspacing="20">
+					
+						<p:column>					
+							<h:commandButton  action="painelMonitorar" image="/paginas/imagens/monitorar.jpg" style="width:140px"/>
+							<h3 align="center"> Monitorar</h3>
+						</p:column>
+						
+						<p:column>					
+							<h:commandButton  action="painelUsuarios" image="/paginas/imagens/usuario.png" style="width:140px"/>
+							<h3 align="center"> Usuarios </h3>
+						</p:column>	
+						
+						<p:column>					
+							<h:commandButton  action="painelGrupos" image="/paginas/imagens/grupo.png" style="width:140px"/>
+							<h3 align="center"> Grupos</h3>
+						</p:column>								
+						
+						<p:column>					
+							<h:commandButton  action="painelAtalhos" image="/paginas/imagens/atalho.png" style="width:140px"/>
+							<h3 align="center"> Atalhos</h3>
+						</p:column>
+						
+						<p:column>					
+							<h:commandButton  action="painelAgendamentos" image="/paginas/imagens/agendamento.jpg" style="width:140px"/>
+							<h3 align="center"> Agendamentos</h3>
+						</p:column>
+												
+						<p:column>					
+							<h:commandButton  action="painelTema" image="/paginas/imagens/tema.jpg" style="width:140px"/>
+							<h3 align="center"> Tema</h3>
+						</p:column>	
+
+						<p:column>					
+							<h:commandButton  action="painelSenha" image="/paginas/imagens/alterarsenha.png" style="width:140px"/>
+							<h3 align="center"> Senha</h3>
+						</p:column>	
+						
+						<p:column>					
+							<h:commandButton  action="painelLog" image="/paginas/imagens/log.jpg" style="width:140px"/>
+							<h3 align="center"> Log</h3>
+						</p:column>																				
+					
+					</h:panelGrid>
+				</center>
+				
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

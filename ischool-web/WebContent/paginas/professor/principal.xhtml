@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+
+ 	<ui:composition template="/templates/professor/templateProfessor.xhtml">
+	
+		<ui:define name="corpoPagina">
+
+				 <p:panel>  <h3 align="center"> Sessão do Professor </h3> </p:panel> 
+				 
+				 <p:panel>				 		
+				 		<div align="left">
+					        <h:outputText value="Selecione uma Classe:" /> <br/> 
+					        <p:selectOneMenu value="#{gerenciamentoAulaBean.entidade.classe}" converter="#{genericConverter}" panelStyle="width:150px"  
+					                         effect="fade" var="cl" style="width:160px"  filter="true" filterMatchMode="startsWith">  
+					            <f:selectItem itemLabel="Selecione..." itemValue="" />  
+					            <f:selectItems value="#{gerenciamentoAulaBean.listaClasses}" var="classe" itemLabel="#{classe.nome}" itemValue="#{classe}"/>  
+					  
+					            <p:column>  
+					                #{cl.nome} - #{cl.turma}  
+					            </p:column>  
+					           <p:ajax event="change" listener="#{gerenciamentoAulaBean.carregarEventosAlunos()}" update=":formulario:mensagem,:formulario:painelEventos"></p:ajax> 
+					        </p:selectOneMenu>
+					        
+							<h:outputText value="Data" />
+							<p:calendar value="#{gerenciamentoAulaBean.entidade.dataExecucao}"></p:calendar>					        
+					        
+					        <p:commandButton value="Imprimir Relatorio"  icon="ui-icon-print" ></p:commandButton>
+					        
+					         <p:commandButton value="Enviar Mensagem"  icon="ui-icon-mail-closed" ></p:commandButton>
+				 		</div> 				 
+				 </p:panel>
+				 
+				 
+				
+				 <p:panel id="painelEventos"  style="overflow: auto;height: 500px">
+				 
+				
+					    <p:dataGrid value="#{gerenciamentoAulaBean.listaAlunos}" id="alunos" rendered="#{!empty gerenciamentoAulaBean.entidade.classe}"
+					                    itemValue="#{aluno}"  converter="#{genericConverter}" var="aluno" columns="1">  					  			
+
+							 <div align="center">
+		 							<p:column>  		 							
+								         <p:outputLabel style="font-weight: bold;font-size:20px" value="#{aluno.nome}"/>
+								         <br/><br/>
+								         
+								         <h:panelGrid columns="2" cellspacing="30">	
+								         
+								         				  			
+												 <p:panel header="MANHÃ">
+												 
+													    <p:dataGrid value="#{gerenciamentoAulaBean.eventoClasseManha}" emptyMessage="Não há eventos inseridos" 
+													                    itemValue="#{eventoClasseManha}" converter="#{genericConverter}" var="eventoClasseManha" 
+													                     columns="#{gerenciamentoAulaBean.eventoClasseManha.size() > 10 ? 10: gerenciamentoAulaBean.eventoClasseManha.size()}">  
+													  			
+													  			
+																        <p:column>  
+																        															        
+																			<p:dataGrid value="#{aluno.listaEventoExecutadoManha}" emptyMessage="" rendered="#{!empty aluno.listaEventoExecutadoManha}"
+																					                    itemValue="#{eventosExecutadosManha}" converter="#{genericConverter}" var="eventosExecutadosManha" 
+																					                     columns="#{aluno.listaEventoExecutadoManha.size() > 5 ? 5: aluno.listaEventoExecutadoManha.size()}">
+																																								
+																				<p:graphicImage value="/paginas/imagens/star_gold_256.png" width="15"  height="15" 
+																				rendered="#{eventosExecutadosManha.evento.codigoEvento == eventoClasseManha.evento.codigoEvento}"/>            
+           
+    
+																			</p:dataGrid>					        
+																	        
+																	        	
+																	            <p:commandLink title="clique" oncomplete="modalEvento.show()" update=":formulario:mensagem,:formulario:painelEvt"> 
+																	           		 <p:graphicImage value="/paginas/imagens/#{eventoClasseManha.evento.icone}" width="60" height="70" /> 
+																	           		 <f:setPropertyActionListener value="#{aluno}" target="#{gerenciamentoAulaBean.entidade.aluno}" />	
+																	           		 <f:setPropertyActionListener value="#{eventoClasseManha.evento}" target="#{gerenciamentoAulaBean.entidade.evento}" />
+																	           		 <f:setPropertyActionListener value="#{gerenciamentoAulaBean.entidade.tipoManha}" target="#{gerenciamentoAulaBean.entidade.tipo}" />	
+																	            </p:commandLink>    
+																	             <br/>
+																	            #{eventoClasseManha.evento.nome}  
+																        </p:column>  
+														    			        
+													    </p:dataGrid>										 
+												  </p:panel> 
+												  
+												  
+												  							  
+												 <p:panel header="OUTROS">
+												 
+													    <p:dataGrid value="#{gerenciamentoAulaBean.eventoClasseOutros}" emptyMessage="Não há eventos inseridos" 
+													                    itemValue="#{eventoClasseOutros}" converter="#{genericConverter}" var="eventoClasseOutros" 
+													                    columns="#{gerenciamentoAulaBean.eventoClasseOutros.size() > 10 ? 10: gerenciamentoAulaBean.eventoClasseOutros.size()}">  
+													  			
+													  			
+																        <p:column>
+																        
+																			<p:dataGrid value="#{aluno.listaEventoExecutadoOutros}" emptyMessage="" rendered="#{!empty aluno.listaEventoExecutadoOutros}"
+																					                    itemValue="#{eventosExecutadosOutros}" converter="#{genericConverter}" var="eventosExecutadosOutros" 
+																					                     columns="#{aluno.listaEventoExecutadoOutros.size() > 5 ? 5: aluno.listaEventoExecutadoOutros.size()}">
+																																								
+																				<p:graphicImage value="/paginas/imagens/star_gold_256.png" width="15" height="15" 
+																				rendered="#{eventosExecutadosOutros.evento.codigoEvento == eventoClasseOutros.evento.codigoEvento}"	/>            
+    
+																			</p:dataGrid>																        
+																        	<p:commandLink title="clique" oncomplete="modalEvento.show()" update=":formulario:mensagem,:formulario:painelEvt"> 
+																           		 <p:graphicImage value="/paginas/imagens/#{eventoClasseOutros.evento.icone}" width="60" height="70" /> 
+																           		 <f:setPropertyActionListener value="#{aluno}" target="#{gerenciamentoAulaBean.entidade.aluno}" />	
+																           		 <f:setPropertyActionListener value="#{eventoClasseOutros.evento}" target="#{gerenciamentoAulaBean.entidade.evento}" />
+																           		 <f:setPropertyActionListener value="#{gerenciamentoAulaBean.entidade.tipoOutros}" target="#{gerenciamentoAulaBean.entidade.tipo}" />
+																            </p:commandLink>   
+																             <br/>
+																            #{eventoClasseOutros.evento.nome}  
+																        </p:column>  
+														    			        
+													    </p:dataGrid>										 
+												  </p:panel>  
+										  
+												  
+												 <p:panel header="TARDE">
+												 
+													    <p:dataGrid value="#{gerenciamentoAulaBean.eventoClasseTarde}" emptyMessage="Não há eventos inseridos" 
+													                    itemValue="#{eventoClasseTarde}" converter="#{genericConverter}" var="eventoClasseTarde"
+													                     columns="#{gerenciamentoAulaBean.eventoClasseTarde.size() > 10 ? 10: gerenciamentoAulaBean.eventoClasseTarde.size()}" >  
+													  			
+													  			
+																        <p:column>  
+																        
+																        	<p:dataGrid value="#{aluno.listaEventoExecutadoTarde}" emptyMessage="" rendered="#{!empty aluno.listaEventoExecutadoTarde}"
+																					                    itemValue="#{eventosExecutadosTarde}" converter="#{genericConverter}" var="eventosExecutadosTarde" 
+																					                     columns="#{aluno.listaEventoExecutadoTarde.size() > 5 ? 5: aluno.listaEventoExecutadoTarde.size()}">
+																																								
+																				<p:graphicImage value="/paginas/imagens/star_gold_256.png" width="15" height="15"
+																				rendered="#{eventosExecutadosTarde.evento.codigoEvento == eventoClasseTarde.evento.codigoEvento}"  />            
+    
+																			</p:dataGrid>
+																            <p:commandLink title="clique" oncomplete="modalEvento.show()" update=":formulario:mensagem,:formulario:painelEvt"> 
+																           		 <p:graphicImage value="/paginas/imagens/#{eventoClasseTarde.evento.icone}" width="60" height="70" /> 
+																           		 <f:setPropertyActionListener value="#{aluno}" target="#{gerenciamentoAulaBean.entidade.aluno}" />	
+																           		 <f:setPropertyActionListener value="#{eventoClasseTarde.evento}" target="#{gerenciamentoAulaBean.entidade.evento}" />
+																           		 <f:setPropertyActionListener value="#{gerenciamentoAulaBean.entidade.tipoTarde}" target="#{gerenciamentoAulaBean.entidade.tipo}" />	 
+																            </p:commandLink>  
+																             <br/>
+																            #{eventoClasseTarde.evento.nome}  
+																        </p:column>  
+														    			        
+													    </p:dataGrid>										 
+												  </p:panel> 
+												
+										</h:panelGrid>									  									  									   
+							        </p:column>	
+							   </div>				     				     
+					    </p:dataGrid> 
+				 	 
+				  </p:panel>	
+
+				<p:dialog header="Execução Evento"  widgetVar="modalEvento" id="modalEvento" resizable="true" width="430" style="height: auto;" modal="true" >  
+				   		 			
+					<h:panelGrid columns="2" id="painelEvt">	
+						<h:column>
+							<h:outputFormat value="Aluno:" />
+						</h:column>
+		
+						<h:column>
+							<h:outputFormat value="#{gerenciamentoAulaBean.entidade.aluno.nome}" rendered="#{!empty gerenciamentoAulaBean.entidade.aluno}" style="font-weight: bold;font-size:15px"/>
+						</h:column>	
+						
+						<h:column>
+							<h:outputFormat value="Evento:" />
+						</h:column>
+		
+						<h:column>
+							<h:outputFormat value="#{gerenciamentoAulaBean.entidade.evento.nome}" rendered="#{!empty gerenciamentoAulaBean.entidade.evento}" style="font-weight: bold;font-size:15px"/>
+						</h:column>	
+						
+						<h:column>
+							<h:outputFormat value="Sala:" />
+						</h:column>
+		
+						<h:column>
+							<h:outputFormat value="#{gerenciamentoAulaBean.entidade.classe.nome}" rendered="#{!empty gerenciamentoAulaBean.entidade.classe}" style="font-weight: bold;font-size:15px"/>
+						</h:column>
+						
+						<h:column>
+							<h:outputFormat value="Turma:" />
+						</h:column>
+		
+						<h:column>
+							<h:outputFormat value="#{gerenciamentoAulaBean.entidade.classe.turma}" rendered="#{!empty gerenciamentoAulaBean.entidade.classe}" style="font-weight: bold;font-size:15px"/>
+						</h:column>																						
+					
+						<h:column>
+							<h:outputFormat value="Quantidade:" />
+						</h:column>
+		
+						<h:column>
+							<p:inputMask mask="?99999" value="#{gerenciamentoAulaBean.entidade.quantidade}" id="quantidade"/>
+						</h:column>					
+					</h:panelGrid>
+					
+					<h:panelGrid>	
+						<h:column>							
+							<h:outputFormat value="Observações" />
+						</h:column>
+						<h:column>
+							<p:inputTextarea rows="10" cols="50" counter="counter" maxlength="255"   id="observacoes"     
+   							counterTemplate="{0} Caracteres Restantes." autoResize="true" value="#{gerenciamentoAulaBean.entidade.observacoes}" ></p:inputTextarea>
+   							<br/>
+   							<h:outputText id="counter" />
+						</h:column>					
+					</h:panelGrid>	
+					
+					<br/><br/>
+					
+					<p:commandButton value="salvar" icon="ui-icon-check" title="clique para salvar" action="#{gerenciamentoAulaBean.salvarOuAtualizar()}" 
+					oncomplete="validarFecharModal(args,modalEvento)" update=":formulario:mensagem,:formulario:painelEventos,:formulario:quantidade,:formulario:observacoes"/>
+					        
+					<p:commandButton value="Cancelar" icon="ui-icon-closethick"  onclick="modalEvento.hide()"></p:commandButton>
+		
+				</p:dialog>			
+
+		</ui:define>
+	</ui:composition>
+
+</html>

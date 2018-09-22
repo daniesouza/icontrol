@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/admin/templateAdmin.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Logs Cadastrados </h3> </p:panel> 
+		 
+ 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Usuário" />
+					<p:inputText value="#{logBean.filtro.usuario.usuario}"/>
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{logBean.filtro.usuario.nome}" />
+					
+					<h:outputText value="Data" />
+					<p:calendar value="#{logBean.filtro.dtCad}"></p:calendar>
+					
+					<h:outputText value="Descrição" />
+					<p:inputText value="#{logBean.filtro.descricao}"/>
+					
+					<h:outputText value="Nome Cliente" />
+					<p:inputText value="#{logBean.filtro.usuario.cliente.nome}"/>
+					
+					<h:outputText value="Cpf/Cnpj Cliente" />
+					<p:inputMask mas="?999999999999999" value="#{logBean.filtro.usuario.cliente.cpfCnpj}"/>
+					
+					<h:outputText value="Tipo de Ação" />
+					<p:selectOneMenu value="#{logBean.filtro.tipo}">
+						<f:selectItem itemLabel="" itemValue="" />
+						<f:selectItem itemLabel="LOGIN NO SISTEMA" itemValue="#{logBean.filtro.login}" />
+						<f:selectItem itemLabel="COMANDO" itemValue="#{logBean.filtro.comando}" />					
+						<f:selectItem itemLabel="INCLUSAO" itemValue="#{logBean.filtro.inclusao}" />
+						<f:selectItem itemLabel="ALTERACAO" itemValue="#{logBean.filtro.alteracao}" />
+						<f:selectItem itemLabel="EXCLUSAO" itemValue="#{logBean.filtro.exclusao}" />
+					</p:selectOneMenu>	
+					
+								
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{logBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{logBean.logDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="25" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+	
+					<p:column headerText="Usuário">
+							<h:outputText value="#{item.usuario.usuario}"/>
+					</p:column>
+														
+					<p:column headerText="Nome">
+							<h:outputText value="#{item.usuario.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Tipo de Ação">
+						<h:outputText value="LOGIN NO SISTEMA" rendered="#{item.tipo eq item.login}"/>
+						<h:outputText value="COMANDO" rendered="#{item.tipo eq item.comando}" />
+						<h:outputText value="INCLUSAO" rendered="#{item.tipo eq item.inclusao}"/>
+						<h:outputText value="ALTERACAO" rendered="#{item.tipo eq item.alteracao}"/>
+						<h:outputText value="EXCLUSAO" rendered="#{item.tipo eq item.exclusao}"/>
+					</p:column>	
+					
+					<p:column headerText="Descrição">
+							<h:outputText value="#{item.descricao}"/>
+					</p:column>
+					
+					<p:column headerText="Data">
+						<h:outputText value="#{item.dtCad}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3"/>
+						</h:outputText>
+					</p:column>	
+					
+					<p:column headerText="Nome Cliente">												
+						<h:outputText value="#{item.usuario.cliente.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Cpf/Cnpj Cliente">
+							<h:outputText value="#{item.usuario.cliente.cpfCnpj}"/>
+					</p:column>															
+			
+				</p:dataTable>
+
+			</p:panel>
+		 
+	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

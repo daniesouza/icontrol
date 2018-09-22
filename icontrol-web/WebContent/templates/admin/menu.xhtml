@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+
+	     <p:menubar>  
+	     	 <p:menuitem value="Home" icon="ui-icon-home" immediate="true" action="#{loginControllerBean.home()}" ajax="false"></p:menuitem>  	     
+	     	 <p:menuitem value="Monitorar"    action="painelMonitorar"   ajax="false" immediate="true" ></p:menuitem>                     
+	         <p:menuitem value="Clientes"     action="painelClientes" 	 ajax="false" immediate="true" ></p:menuitem>  
+	         <p:menuitem value="Usuarios"  	  action="painelUsuarios" 	 ajax="false" immediate="true" ></p:menuitem>
+	         <p:menuitem value="Grupos"    	  action="painelGrupos" 	 ajax="false" immediate="true" ></p:menuitem>  	         
+	         <p:menuitem value="Arduinos"  	  action="painelArduinos" 	 ajax="false" immediate="true" ></p:menuitem> 
+	         <p:menuitem value="Componentes"  action="painelComponentes" ajax="false" immediate="true" ></p:menuitem>  
+	         <p:menuitem value="Comandos"     action="painelComandos" 	 ajax="false" immediate="true" ></p:menuitem>   
+	         <p:menuitem value="Cameras"      action="painelCameras" 	 ajax="false" immediate="true" ></p:menuitem>  
+	         <p:submenu label="Relatorios">                                                        
+		          <p:menuitem value="Consumo" action="#" ajax="false" immediate="true" rendered="false" />
+		          <p:menuitem value="Logs" action="painelLog" 	 ajax="false" immediate="true" />		               				        	
+	         </p:submenu> 
+	         <p:submenu label="Configurações">                                                        
+		          <p:menuitem value="Tema"  action="painelTema" ajax="false" immediate="true" />
+		          <p:menuitem value="Senha" action="painelSenha"  ajax="false" immediate="true" />			               				        	
+	         </p:submenu>	         	         
+	          
+	     </p:menubar>  
+</html>

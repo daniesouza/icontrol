@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/admin/templateAdmin.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Cameras Cadastradas </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+		 			<p:commandButton value="Novo" action="#{cameraBean.novo()}" oncomplete="camera.show()" update=":formulario:cameraGrid"></p:commandButton>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Código" />
+					<p:inputText value="#{cameraBean.filtro.codigo}"/>
+
+					<h:outputText value="Nome" />
+					<p:inputText value="#{cameraBean.filtro.nome}"/>
+										
+					<h:outputText value="URL" />
+					<p:inputText value="#{cameraBean.filtro.ip}" />
+					
+									
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{cameraBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{cameraBean.cameraDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="#{cameraBean.registroPorPagina}" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+					
+					<!--  <p:column selectionMode="single" /> -->
+					
+					<p:column headerText="Código">
+							<p:outputLabel value="#{item.codigo}"/>
+					</p:column>
+					
+					<p:column headerText="Nome">
+							<p:outputLabel value="#{item.nome}"/>
+					</p:column>					
+					
+					<p:column headerText="URL">
+							<h:outputText value="#{item.ip}"/>
+					</p:column>
+					
+					<p:column headerText="Cod Arduino">
+							<h:outputText value="#{item.arduino.codigo}"/>
+					</p:column>
+					
+					
+					<p:column> 
+						 <p:commandButton value="Alterar"  oncomplete="camera.show()" update=":formulario:camera">
+            				  <f:setPropertyActionListener value="#{item}" target="#{cameraBean.entidade}" />						
+            			 </p:commandButton>
+					</p:column>
+				
+			
+				
+					<p:column>
+						 <p:commandButton value="Excluir" onclick="confirmation.show()">
+							  <f:setPropertyActionListener value="#{item}" target="#{cameraBean.entidade}" />	
+						 </p:commandButton>         	   
+					</p:column>
+					
+				</p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{cameraBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 								
+		    	 
+			 <p:dialog header="camera"  widgetVar="camera" id="camera" resizable="true" width="350">  
+		   			
+		   		 			
+				<h:panelGrid columns="2" id="cameraGrid"  >
+
+			             <h:outputText value="Código *:" />  
+			   			 <p:inputText  value="#{cameraBean.entidade.codigo}" disabled="#{!empty cameraBean.entidade.id}"/>  
+
+			             <h:outputText value="Nome *:" />  
+			   			 <p:inputText  value="#{cameraBean.entidade.nome}"/>   	
+			   			 
+			   			 <h:outputText value="Marca *:" />  
+			             <p:selectOneMenu value="#{cameraBean.entidade.marca}">
+			             	<f:selectItem itemLabel="APEXIS" itemValue="APEXIS"/>
+			             	<f:selectItem itemLabel="OUTROS" itemValue="OUTROS"/>
+			             </p:selectOneMenu>		   
+
+			             <h:outputText value="URL *:" />  
+			             <p:inputText value="#{cameraBean.entidade.ip}" />
+			             
+			             <h:outputText value="Requer Autenticação :" />  
+			             <p:selectBooleanCheckbox value="#{cameraBean.entidade.autenticacao}" >
+			            	 <p:ajax update=":formulario:camera_login,:formulario:camera_pass"/> 
+			             </p:selectBooleanCheckbox>
+			             
+ 			             <h:outputText value="Login :" />  
+			             <p:inputText value="#{cameraBean.entidade.usuario}" id="camera_login" disabled="#{!cameraBean.entidade.autenticacao}" />
+			             
+			             <h:outputText value="Senha :" />  
+			             <p:inputText value="#{cameraBean.entidade.senha}" id="camera_pass" disabled="#{!cameraBean.entidade.autenticacao}"  /> 
+
+				</h:panelGrid>
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{cameraBean.salvarOuAtualizar()}" oncomplete="validarFecharModal(args,camera)" update=":formulario:mensagem,:formulario:tabela,:formulario:cameraGrid"/>
+			    
+	    	 </p:dialog>	
+									     	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

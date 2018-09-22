@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/persistence"
+	version="2.0">
+	
+	<persistence-unit name="IcontrolJPA" transaction-type="JTA">
+		 
+	 <provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:/IControlDS</jta-data-source>
+		
+	   <class>br.com.icontrol.entity.Camera</class>
+	   <class>br.com.icontrol.entity.Cliente</class>
+ 	   <class>br.com.icontrol.entity.Usuario</class>
+ 	   <class>br.com.icontrol.entity.Componente</class>
+ 	   <class>br.com.icontrol.entity.Comando</class>
+       <class>br.com.icontrol.entity.Arduino</class>
+ 	   <class>br.com.icontrol.entity.Grupo</class>
+ 	   <class>br.com.icontrol.entity.GrupoArdCompPermissoes</class>
+ 	   <class>br.com.icontrol.entity.Log</class>
+ 	   <class>br.com.icontrol.entity.Atalho</class>
+ 	   <class>br.com.icontrol.entity.AtalhoArdCompComando</class>
+ 	   <class>br.com.icontrol.entity.Agendamento</class>
+
+		
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.show_sql" value="false"/>
+		</properties>
+	</persistence-unit>
+</persistence>

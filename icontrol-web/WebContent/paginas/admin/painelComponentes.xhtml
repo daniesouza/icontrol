@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/admin/templateAdmin.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Componentes Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 	<div align="left">
+		 			<p:commandButton value="Novo" action="#{componenteBean.novo}" oncomplete="componente.show()" update=":formulario:mensagem,:formulario:gridComponente,:formulario:tab"></p:commandButton>
+		 	</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Código" />
+					<p:inputText value="#{componenteBean.filtro.codigo}"/>
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{componenteBean.filtro.nome}" />
+					
+					<h:outputText value="Marca" />
+					<p:inputText value="#{componenteBean.filtro.marca}" />
+					
+					<h:outputText value="Porta" />
+					<p:selectOneMenu value="#{componenteBean.filtro.portaArduino}">
+						<f:selectItem itemLabel="" itemValue="" />
+						<f:selectItem itemLabel="A0" itemValue="#{componenteBean.entidade.a0}" />					
+						<f:selectItem itemLabel="A1" itemValue="#{componenteBean.entidade.a1}" />
+						<f:selectItem itemLabel="A2" itemValue="#{componenteBean.entidade.a2}" />	
+						<f:selectItem itemLabel="A3" itemValue="#{componenteBean.entidade.a3}" />	
+						<f:selectItem itemLabel="A4" itemValue="#{componenteBean.entidade.a4}" />	
+						<f:selectItem itemLabel="A5" itemValue="#{componenteBean.entidade.a5}" />		
+					</p:selectOneMenu>					
+									
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{componenteBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{componenteBean.componenteDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="#{componenteBean.registroPorPagina}" 
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+						
+						<!--  <p:column selectionMode="single" /> -->
+						
+						<p:column headerText="Código">
+								<p:outputLabel value="#{item.codigo}"/>
+						</p:column>
+						
+						<p:column headerText="Nome">
+								<h:outputText value="#{item.nome}"/>
+						</p:column>
+						
+						<p:column headerText="Marca">
+							<h:outputText value="#{item.marca}" />
+						</p:column>	
+						
+						<p:column headerText="Porta">
+							<h:outputText value="A0" rendered="#{item.portaArduino eq item.a0}"/>
+							<h:outputText value="A1" rendered="#{item.portaArduino eq item.a1}"/>
+							<h:outputText value="A2" rendered="#{item.portaArduino eq item.a2}"/>
+							<h:outputText value="A3" rendered="#{item.portaArduino eq item.a3}"/>
+							<h:outputText value="A4" rendered="#{item.portaArduino eq item.a4}"/>
+							<h:outputText value="A5" rendered="#{item.portaArduino eq item.a5}"/>						
+						</p:column>										
+			
+						
+						<p:column> 
+							 <p:commandButton value="Alterar"  oncomplete="componente.show()" action="#{componenteBean.editar}" update=":formulario:mensagem,:formulario:gridComponente,:formulario:tab">
+	            				  <f:setPropertyActionListener value="#{item}" target="#{componenteBean.entidade}" />						
+	            			 </p:commandButton>
+						</p:column>
+					
+				
+					
+						<p:column>
+							 <p:commandButton value="Excluir" onclick="confirmation.show()">
+								  <f:setPropertyActionListener value="#{item}" target="#{componenteBean.entidade}" />	
+							 </p:commandButton>         	   
+						</p:column>
+					
+				  </p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{componenteBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 					
+
+	    	 
+			 <p:dialog header="Componente"  widgetVar="componente" id="componente" resizable="true" width="520" style="height: auto;" modal="true" >  
+		
+				<h:panelGrid columns="2" cellpadding="5" id="gridComponente">
+	
+			             <h:outputText value="Código *:" />  
+			   			 <p:inputText  value="#{componenteBean.entidade.codigo}" disabled="#{!empty componenteBean.entidade.id}"/>  
+
+			             <h:outputText value="Nome *:" />  
+			             <p:inputText value="#{componenteBean.entidade.nome}" /> 
+			             			   			 		   			
+			             <h:outputText value="Marca:" />  
+			             <p:inputText value="#{componenteBean.entidade.marca}" /> 	
+			             
+			             <h:outputText value="Consumo KW/h" />  
+			             <p:inputText value="#{componenteBean.entidade.consumo}" onkeydown="mascara(this,moeda)"/> 				             
+			             
+						<h:outputText value="Porta *" />
+						<p:selectOneMenu value="#{componenteBean.entidade.portaArduino}">
+							<f:selectItem itemLabel="" itemValue="" />
+							<f:selectItem itemLabel="A0" itemValue="#{componenteBean.entidade.a0}" />					
+							<f:selectItem itemLabel="A1" itemValue="#{componenteBean.entidade.a1}" />
+							<f:selectItem itemLabel="A2" itemValue="#{componenteBean.entidade.a2}" />	
+							<f:selectItem itemLabel="A3" itemValue="#{componenteBean.entidade.a3}" />	
+							<f:selectItem itemLabel="A4" itemValue="#{componenteBean.entidade.a4}" />	
+							<f:selectItem itemLabel="A5" itemValue="#{componenteBean.entidade.a5}" />		
+						</p:selectOneMenu>				             	             
+			             
+				</h:panelGrid>
+				
+				<p:tabView id="tab">
+				
+					<p:tab title="Comandos">
+										
+						<p:pickList value="#{componenteBean.comandos}" 
+								converter="#{genericConverter}" var="comando"
+								itemValue="#{comando}"
+								itemLabel="#{comando.codigo} - #{comando.nome}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Comandos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Comandos Adicionados" />
+								</f:facet>
+						</p:pickList>				
+			
+					</p:tab>					
+					
+				</p:tabView>	
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{componenteBean.salvarOuAtualizar()}" oncomplete="validarFecharModal(args,componente)" 
+				update=":formulario:mensagem,:formulario:tabela,:formulario:gridComponente,:formulario:tab"/>
+				
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

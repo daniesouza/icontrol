@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+
+<h:head>
+	<f:loadBundle basename="br.com.icontrol.messages.messages" var="msgs" />
+	 <style type="text/css">.ui-widget {font-size: 12px !important;}</style> 
+	<title>#{msgs.sistema_icontrol}!!!</title>
+</h:head> 
+
+
+
+<body>
+
+	<form action="#{request.contextPath}/j_spring_security_check" method="post" >
+ 
+	<p:panel>  
+	
+		<div>	
+				
+			<h3 align="center">#{msgs.sistema_icontrol}!!! </h3>
+		
+		</div>
+	
+		<div align="right"> 
+		
+			<h4> <h:outputText value="#{msgs.usuario_incorreto}!!" rendered="#{param.erro == 1}" style="color: red"/></h4>
+			 <h:panelGrid columns="2">	
+	
+		    	<h:column>
+		    		<h:outputFormat value="#{msgs.usuario}:" />
+		    	</h:column>
+		    	
+		    	<h:column>
+		    		<h:inputText size="25" id="j_username" />
+		    	</h:column>
+	
+		    	<h:column>
+		    		<h:outputFormat value="#{msgs.senha}" />
+		    	</h:column>
+		    	
+		    	<h:column>
+		    		<h:inputSecret size="25" id="j_password" />
+		    	</h:column>
+		    	
+		    </h:panelGrid>
+		    <h:form>
+		    	 <p:commandLink onclick="modalEmail.show();"  rendered="false">
+					<h:outputText value="Esqueceu a senha?" />
+				 </p:commandLink>
+				 <p:spacer height="0" width="15px"/>
+		   		 <p:commandButton  value="#{msgs.login}" title="#{msgs.clique_logar}!" type="submit" ajax="false"/>
+		    </h:form>
+	    
+	    </div>
+	
+	 </p:panel> 
+	 
+	 	<h:form>
+			<p:dialog id="modalEmail" rendered="false"
+				header="Lembrete de senha" widgetVar="modalEmail"
+				closable="true" modal="true" width="280"
+				height="140" resizable="false">
+				
+					<h:panelGrid columns="2" cellpadding="5">
+						<h:outputLabel for="email" value="Email: " />
+						<p:inputText id="email" required="true" label="email" requiredMessage="E-mail Obrigatório" />
+	
+						<h:outputLabel for="usuario" value="#{msgs.usuario}: " />
+						<p:inputText  id="usuario" required="true" label="usuario" requiredMessage="Usuario Obrigatorio" />									
+						<f:facet name="footer">
+							<p:commandButton style="float:right;" value="Enviar"  oncomplete="modalEmail.hide();"/>
+						</f:facet>
+					</h:panelGrid>		
+			</p:dialog>	
+		</h:form>
+	
+	</form>
+	
+	
+	    <p:tabView effect="fade" effectDuration="normal">  
+  
+        <p:tab title="O que é">  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/paginas/imagens/icontrolimage1.jpg" />  
+                <h:outputText  
+                    value="Icontrol.
+                    Icontrol e um sistema de controle empresarial." />  
+            </h:panelGrid>  
+        </p:tab>  
+        <p:tab title="Contato">  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/paginas/imagens/contato.jpg" />  
+                <h:outputText value="E-mail:tccicontrol@usjt.br"></h:outputText>  
+            </h:panelGrid>  
+        </p:tab>
+        </p:tabView>
+	
+	
+	<h:form rendered="false">
+		<center>
+			<h:commandButton  value="#{msgs.cad_usuario}" title="#{msgs.clique_cad_usuario}!"  action="novoUsuario.jsf" />
+		</center>
+	</h:form>
+	</body>
+
+</html>

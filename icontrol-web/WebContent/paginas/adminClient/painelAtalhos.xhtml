@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/adminClient/templateAdminClient.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Atalhos Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 	<div align="left">
+		 			<p:commandButton value="Novo" actionListener="#{atalhoBean.novo()}" oncomplete="atalho.show()" update=":formulario:mensagem,:formulario:atalhoGrid,:formulario:tabViewatalho"></p:commandButton>
+		 	</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Nome:" />
+					<p:inputText value="#{atalhoBean.filtro.nome}"/>
+					
+					<h:outputText value="Descriçao:" />
+					<p:inputText value="#{atalhoBean.filtro.descricao}" />
+																		
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{atalhoBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{atalhoBean.atalhoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="#{atalhoBean.registroPorPagina}" 
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+												
+						<p:column headerText="Nome">
+								<p:outputLabel value="#{item.nome}"/>
+						</p:column>
+						
+						<p:column headerText="Descrição">
+								<h:outputText value="#{item.descricao}"/>
+						</p:column>				
+						
+						<p:column> 
+							 <p:commandButton value="Alterar"  oncomplete="atalho.show()" action="#{atalhoBean.editar}" update=":formulario:mensagem,:formulario:atalhoGrid,:formulario:tabViewatalho">
+	            				  <f:setPropertyActionListener value="#{item}" target="#{atalhoBean.entidade}" />						
+	            			 </p:commandButton>
+						</p:column>
+					
+				
+					
+						<p:column>
+							 <p:commandButton value="Excluir" oncomplete="confirmation.show()">
+								  <f:setPropertyActionListener value="#{item}" target="#{atalhoBean.entidade}" />	
+							 </p:commandButton>         	   
+						</p:column>
+					
+				  </p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    actionListener="#{atalhoBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela,:formulario:tabViewatalho"/>  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 					
+
+	    	 
+			 <p:dialog header="atalho"  widgetVar="atalho" id="atalho" resizable="true" width="620" style="height: auto;" modal="true" >  
+		   			
+		   		 			
+				<h:panelGrid columns="2" cellpadding="5" id="atalhoGrid">
+	
+			             <h:outputText value="Nome *:" />  
+			   			 <p:inputText  value="#{atalhoBean.entidade.nome}"/>  
+
+			             <h:outputText value="Descrição *:" />  
+			             <p:inputText value="#{atalhoBean.entidade.descricao}" /> 
+
+				        <h:outputText value="Icone *:" />  
+				        <p:selectOneMenu value="#{atalhoBean.iconeSelecionado}" panelStyle="width:150px"  converter="#{iconeConverter}"
+				                         effect="fade" var="p" style="width:160px"  filter="true" filterMatchMode="startsWith">  
+				           				        
+				            <f:selectItems value="#{atalhoBean.listaIcones}" var="icone" itemLabel="#{icone.nome}" itemValue="#{icone}"/>
+				           			  	            
+							<p:column>  
+				                 <p:graphicImage value="/paginas/imagens/icons/#{p.imagem}" width="40" height="50" />  
+				            </p:column>  
+				  
+				            <p:column>  
+				               #{p.nome}
+				            </p:column> 
+ 
+				        </p:selectOneMenu> 			             
+			             
+				</h:panelGrid>
+							
+				
+					<p:tabView id="tabViewatalho">
+																	
+						<p:tab title="Permissões">
+							<p:selectOneMenu id="comboArduinos" converter="#{genericConverter}" value="#{atalhoBean.arduino}">
+								<f:selectItem itemLabel="Selecione" itemValue="" />
+								<f:selectItems value="#{atalhoBean.arduinosAcesso}" var="arduino" itemLabel="#{arduino.nome}" itemValue="#{arduino}" />
+								<p:ajax event="change" listener="#{atalhoBean.popularComponentes}" update=":formulario:mensagem,comboComponente,pickListComando" />
+							</p:selectOneMenu>						
+							<p:selectOneMenu id="comboComponente" converter="#{genericConverter}" value="#{atalhoBean.componente}">
+								<f:selectItem itemLabel="Selecione" itemValue="" />
+								<f:selectItems value="#{atalhoBean.listaComponentes}" var="componente" itemLabel="#{componente.nome}" itemValue="#{componente}" />
+								<p:ajax listener="#{atalhoBean.popularComando}" update=":formulario:mensagem,pickListComando" />
+							</p:selectOneMenu>
+								
+							<p:pickList id="pickListComando" value="#{atalhoBean.comandos}"
+								converter="#{genericConverter}" var="comando"
+								iconOnly="true" itemValue="#{comando}"
+								itemLabel="#{comando.codigo} - #{comando.nome}"
+								onTransfer="atualizarComando()">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Comandos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Comandos Adicionados" />
+								</f:facet>
+							</p:pickList>
+							<p:remoteCommand name="atualizarComando" global="false" update=":formulario:mensagem,:formulario:tabViewatalho:comboArduinos" actionListener="#{atalhoBean.atualizarComandos()}" /> 							
+						</p:tab>						
+						
+					</p:tabView>
+
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{atalhoBean.salvarOuAtualizar()}" 
+				oncomplete="validarFecharModal(args,atalho)" update=":formulario:mensagem,:formulario:tabela,:formulario:atalhoGrid,:formulario:tabViewatalho"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

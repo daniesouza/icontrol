@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/admin/templateAdmin.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Arduinos Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 	<div align="left">
+		 			<p:commandButton value="Novo" action="#{arduinoBean.novo}" oncomplete="arduino.show()" update=":formulario:mensagem,:formulario:gridArduino,:formulario:fieldArduino,:formulario:tab"></p:commandButton>
+		 	</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Código" />
+					<p:inputText value="#{arduinoBean.filtro.codigo}"/>
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{arduinoBean.filtro.nome}" />
+					
+					<h:outputText value="IP" />
+					<p:inputText value="#{arduinoBean.filtro.ip}" />
+					
+					<h:outputText value="Porta" />
+					<p:inputText value="#{arduinoBean.filtro.porta}" />					
+					
+					<h:outputText value="Cliente:" />
+					<p:inputText value="#{arduinoBean.filtro.cliente.nome}" />					
+														
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{arduinoBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{arduinoBean.arduinoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="#{arduinoBean.registroPorPagina}" 
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+						
+					
+						<p:column headerText="Código">
+								<p:outputLabel value="#{item.codigo}"/>
+						</p:column>
+						
+						<p:column headerText="Nome">
+								<h:outputText value="#{item.nome}"/>
+						</p:column>	
+						
+						<p:column headerText="IP">
+								<h:outputText value="#{item.ip}"/>
+						</p:column>
+						
+						<p:column headerText="Porta">
+								<h:outputText value="#{item.porta}"/>
+						</p:column>														
+						
+						<p:column headerText="Cliente">
+								<h:outputText value="#{item.cliente.nome}"/>
+						</p:column>	
+						
+						<p:column> 
+							 <p:commandButton value="Alterar"  oncomplete="arduino.show()" action="#{arduinoBean.editar}" update=":formulario:mensagem,:formulario:gridArduino,:formulario:fieldArduino,:formulario:tab">
+	            				  <f:setPropertyActionListener value="#{item}" target="#{arduinoBean.entidade}" />						
+	            			 </p:commandButton>
+						</p:column>
+					
+				
+					
+						<p:column>
+							 <p:commandButton value="Excluir" onclick="confirmation.show()">
+								  <f:setPropertyActionListener value="#{item}" target="#{arduinoBean.entidade}" />	
+							 </p:commandButton>         	   
+						</p:column>
+					
+				  </p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{arduinoBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 					
+
+	    	 
+			 <p:dialog header="Arduino"  widgetVar="arduino" id="arduino" resizable="true" width="620" style="height: auto;" modal="true" >   
+			      		   		 			
+				<h:panelGrid columns="2" cellpadding="5" id="gridArduino">
+	
+			             <h:outputText value="Código *:" />  
+			   			 <p:inputText  value="#{arduinoBean.entidade.codigo}" disabled="#{!empty arduinoBean.entidade.id}"/>  
+
+			             <h:outputText value="Nome *:" />  
+			             <p:inputText value="#{arduinoBean.entidade.nome}" /> 
+
+			             <h:outputText value="IP *:" />  
+			             <p:inputText value="#{arduinoBean.entidade.ip}" /> 	
+			             
+			             <h:outputText value="Porta *:" />  
+			             <p:inputText value="#{arduinoBean.entidade.porta}" /> 	
+			             
+			             <h:outputText value="Andar *:" />  
+						 <p:inputMask mask="?999" value="#{arduinoBean.entidade.andar}" ></p:inputMask>		             	             
+			             
+				</h:panelGrid>
+				
+			  <p:fieldset legend="Clientes" id="fieldArduino">
+				<p:dataTable var="item" height="200"  value="#{arduinoBean.clienteDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="4"
+					selection="#{arduinoBean.entidade.cliente}"
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >	
+						
+						<p:column selectionMode="single" style="width:2%" />
+
+						<p:column headerText="Razão Social">
+							<p:outputLabel value="#{item.razaoSocial}" />
+						</p:column>
+
+						<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}" />
+						</p:column>
+
+						<p:column headerText="Tipo">
+							<h:outputText value="FISICA" rendered="#{item.tipo == 1}" />
+							<h:outputText value="JURIDICA" rendered="#{item.tipo == 2}" />
+						</p:column>
+
+						<p:column headerText="CPF/CNPJ">
+							<h:outputText value="#{item.cpfCnpj}" />
+						</p:column>
+
+						<p:column headerText="Telefone">
+							<h:outputText value="#{item.telefone}" />
+						</p:column>
+
+					</p:dataTable>
+				</p:fieldset>
+								
+				<p:tabView id="tab">
+				
+					<p:tab title="Componentes">
+										
+						<p:pickList value="#{arduinoBean.componentes}" 
+								converter="#{genericConverter}" var="componente"
+								itemValue="#{componente}"
+								itemLabel="#{componente.codigo} - #{componente.nome} - A#{componente.portaArduino}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="componente" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Componentes Adicionados" />
+								</f:facet>
+						</p:pickList>				
+			
+					</p:tab>
+					
+					<p:tab title="Cameras">
+										
+						<p:pickList value="#{arduinoBean.cameras}" 
+								converter="#{genericConverter}" var="camera"
+								itemValue="#{camera}"
+								itemLabel="#{camera.codigo} - #{camera.ip}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Cameras" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Cameras Adicionadas" />
+								</f:facet>
+						</p:pickList>				
+			
+					</p:tab>											
+					
+				</p:tabView>	
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{arduinoBean.salvarOuAtualizar()}"
+				 oncomplete="validarFecharModal(args,arduino)" update=":formulario:mensagem,:formulario:tabela,:formulario:gridArduino,:formulario:fieldArduino,:formulario:tab"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

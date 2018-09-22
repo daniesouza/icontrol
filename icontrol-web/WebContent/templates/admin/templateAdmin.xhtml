@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+
+ <h:head>
+   <style type="text/css">.ui-widget {font-size: 12px !important;}</style> 
+   <title> #{msgs.sistema_icontrol}</title>   
+   <h:outputScript name="util.js" library="js" target="head" />   
+ </h:head>
+	
+	<h:form id="formulario">
+	   
+	   <f:metadata>
+           <f:event type="preRenderView" listener="#{loginControllerBean.preRenderView}"></f:event>
+       </f:metadata>
+	
+		<body>		
+		
+		<p:growl id="mensagem" showDetail="true"/>
+		<f:loadBundle basename="br.com.icontrol.messages.messages"  var="msgs"/>
+		<p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>  
+		
+		<p:dialog modal="true" widgetVar="statusDialog" header="Carregando..."  draggable="false" closable="false" resizable="false">  
+		    <p:graphicImage value="/paginas/imagens/ajaxloadingbar.gif" />  
+		</p:dialog> 
+		
+			<center>
+				<div style="width: 90%; background-color: white">	
+					<div>
+						
+						<!-- ###################### CABEÇALHO DA PAGINA ################ -->
+						
+						<div>
+							<ui:include src="/templates/admin/cabecalho.xhtml"/> 	
+						</div>
+						
+						
+						<!-- ###################### MENU ################ -->
+						<div>
+							<ui:include src="/templates/admin/menu.xhtml" />
+						</div>					
+										
+					</div>
+					
+						<!-- ######################CORPO DA PAGINA DEFINIDO PELO UI:INSERT ################ -->
+					<div style="background-image: url(/icontrol-web/paginas/imagens/img0001.png);">
+						<ui:insert name="corpoPagina" />
+					</div>
+							
+							
+						<!-- ######################RODAPE ################ -->
+								
+					<div>
+						<ui:include src="/templates/admin/rodape.xhtml"/>	
+					</div>
+								
+				</div>				
+			</center>	
+		</body>
+	</h:form>
+</html>

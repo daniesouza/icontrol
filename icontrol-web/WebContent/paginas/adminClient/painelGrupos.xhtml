@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/adminClient/templateAdminClient.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Grupos Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 	<div align="left">
+		 			<p:commandButton value="Novo" action="#{grupoBean.novoViaAdmin}" oncomplete="grupo.show()" update=":formulario:mensagem,:formulario:grupoGrid,:formulario:tabViewGrupo"></p:commandButton>
+		 	</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Nome:" />
+					<p:inputText value="#{grupoBean.filtro.nome}"/>
+					
+					<h:outputText value="Descriçao:" />
+					<p:inputText value="#{grupoBean.filtro.descricao}" />
+					
+														
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{grupoBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{grupoBean.grupoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="#{grupoBean.registroPorPagina}" 
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+												
+						<p:column headerText="Nome">
+								<p:outputLabel value="#{item.nome}"/>
+						</p:column>
+						
+						<p:column headerText="Descrição">
+								<h:outputText value="#{item.descricao}"/>
+						</p:column>				
+						
+						<p:column> 
+							 <p:commandButton value="Alterar"  oncomplete="grupo.show()" action="#{grupoBean.editar}" update=":formulario:mensagem,:formulario:grupoGrid,:formulario:tabViewGrupo">
+	            				  <f:setPropertyActionListener value="#{item}" target="#{grupoBean.entidade}" />						
+	            			 </p:commandButton>
+						</p:column>
+					
+				
+					
+						<p:column>
+							 <p:commandButton value="Excluir" onclick="confirmation.show()">
+								  <f:setPropertyActionListener value="#{item}" target="#{grupoBean.entidade}" />	
+							 </p:commandButton>         	   
+						</p:column>
+					
+				  </p:dataTable>
+
+			</p:panel>
+		    
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  actionListener="#{grupoBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" />   
+		        </center>               
+		    </p:confirmDialog> 		 
+		 					
+
+	    	 
+			 <p:dialog header="Grupo"  widgetVar="grupo" id="grupo" resizable="true" width="620" style="height: auto;" modal="true" >  
+		   			
+		   		 			
+				<h:panelGrid columns="2" cellpadding="5" id="grupoGrid">
+	
+			             <h:outputText value="Nome *:" />  
+			   			 <p:inputText  value="#{grupoBean.entidade.nome}"/>  
+
+			             <h:outputText value="Descrição *:" />  
+			             <p:inputText value="#{grupoBean.entidade.descricao}" /> 
+		             
+			             
+				</h:panelGrid>
+							
+				
+					<p:tabView id="tabViewGrupo">
+					
+					  <p:tab title="Usuários">
+							<p:pickList value="#{grupoBean.usuarios}"
+								converter="#{genericConverter}" var="usuario"
+								iconOnly="true" itemValue="#{usuario}"
+								itemLabel="#{usuario.usuario}"
+								showTargetFilter="true"
+								showSourceFilter="true"
+								filterMatchMode="contains" >
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Usuários não inclusos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Usuários inclusos" />
+								</f:facet>
+							</p:pickList> 							
+						</p:tab>					
+					
+						<p:tab title="Arduino">						
+							<p:pickList id="pickListArduinos" value="#{grupoBean.arduinos}"
+								converter="#{genericConverter}" var="arduino"
+								iconOnly="true" itemValue="#{arduino}"
+								itemLabel="#{arduino.codigo} - #{arduino.nome}"
+								onTransfer="atualizarArduinos()">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Arduinos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Arduinos Adicionados" />
+								</f:facet>
+							</p:pickList>
+							 			
+			 				<p:remoteCommand name="atualizarArduinos" global="false"  action="#{grupoBean.zerarComponentesComandos}"  update=":formulario:mensagem,:formulario:tabViewGrupo:comboArduinos,:formulario:tabViewGrupo:comboComponente,:formulario:tabViewGrupo:pickListComando" />				
+						</p:tab>
+												
+						<p:tab title="Permissões">
+							<p:selectOneMenu id="comboArduinos" converter="#{genericConverter}" value="#{grupoBean.arduino}">
+								<f:selectItem itemLabel="Selecione" itemValue="" />
+								<f:selectItems value="#{grupoBean.arduinos.target}" var="arduino" itemLabel="#{arduino.nome}" itemValue="#{arduino}" />
+								<p:ajax event="change" listener="#{grupoBean.popularComponentes}" update=":formulario:mensagem,comboComponente,pickListComando" />
+							</p:selectOneMenu>						
+							<p:selectOneMenu id="comboComponente" converter="#{genericConverter}" value="#{grupoBean.componente}">
+								<f:selectItem itemLabel="Selecione" itemValue="" />
+								<f:selectItems value="#{grupoBean.listaComponentes}" var="componente" itemLabel="#{componente.nome}" itemValue="#{componente}" />
+								<p:ajax listener="#{grupoBean.popularComando}" update=":formulario:mensagem,pickListComando" />
+							</p:selectOneMenu>
+								
+							<p:pickList id="pickListComando" value="#{grupoBean.comandos}"
+								converter="#{genericConverter}" var="comando"
+								iconOnly="true" itemValue="#{comando}"
+								itemLabel="#{comando.codigo} - #{comando.nome}"
+								onTransfer="atualizarComando()">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Comandos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Comandos Adicionados" />
+								</f:facet>
+							</p:pickList>
+							<p:remoteCommand name="atualizarComando" global="false"  update=":formulario:mensagem,:formulario:tabViewGrupo:comboArduinos" actionListener="#{grupoBean.atualizarComandos()}"/> 							
+						</p:tab>						
+						
+					</p:tabView>
+
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{grupoBean.salvarOuAtualizar()}" 
+				oncomplete="validarFecharModal(args,grupo)" update=":formulario:mensagem,:formulario:tabela,:formulario:grupoGrid,:formulario:tabViewGrupo"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/adminClient/templateAdminClient.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Eventos Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+		 			<p:commandButton value="Novo" action="#{eventoBean.novoEventoCliente}" oncomplete="evento.show()" update=":formulario:mensagem,:formulario:gridEvento"></p:commandButton>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					
+					<h:outputText value="Cód. Evento" />
+					<p:inputText value="#{eventoBean.filtro.codigoEvento}" />	
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{eventoBean.filtro.nome}"/>											
+					
+					<h:outputText value="Data Cadastro" />
+					<p:calendar value="#{eventoBean.filtro.dataCadastro}"></p:calendar>	
+										
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{eventoBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{eventoBean.eventoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="#{eventoBean.registroPorPagina}" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+									
+					<p:column headerText="Código">
+							<h:outputText value="#{item.codigoEvento}"/>
+					</p:column>
+					
+					<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Data Cadastro">
+						<h:outputText value="#{item.dataCadastro}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</p:column>
+					
+					
+					<p:column headerText="Icone">  
+		                 <p:graphicImage value="/paginas/imagens/#{item.icone}" width="40" height="50" />  
+		            </p:column>	
+										
+					<p:column> 
+						 <p:commandButton value="Alterar" action="#{eventoBean.editar}" oncomplete="evento.show()" update=":formulario:mensagem,:formulario:gridEvento">
+            				  <f:setPropertyActionListener value="#{item}" target="#{eventoBean.entidade}" />						
+            			 </p:commandButton>
+					</p:column>
+											
+				</p:dataTable>
+
+			</p:panel>
+
+ 		 
+	    	 
+			 <p:dialog header="Evento"  widgetVar="evento" id="evento" resizable="true" width="620" style="height: auto;" modal="true" >  
+		   			
+		   		 			
+				<h:panelGrid columns="4" id="gridEvento">
+				
+					<h:column>
+						<h:outputFormat value="Código Evento:" />
+					</h:column>
+	
+					<h:column>
+						<p:inputText size="25" value="#{eventoBean.entidade.codigoEvento}" disabled="#{!empty eventoBean.entidade.idEvento}" />
+					</h:column>
+	
+					<h:column>
+						<h:outputFormat value="Nome:" />
+					</h:column>
+	
+					<h:column>
+						<p:inputText size="25" value="#{eventoBean.entidade.nome}" />
+					</h:column>
+										
+				</h:panelGrid>		
+							
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{eventoBean.salvarOuAtualizar()}" 
+				oncomplete="validarFecharModal(args,evento)" update=":formulario:mensagem,:formulario:tabela"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

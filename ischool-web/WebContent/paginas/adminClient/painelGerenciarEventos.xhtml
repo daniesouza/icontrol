@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/adminClient/templateAdminClient.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Gerenciamento de Eventos </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+			        <h:outputText value="Selecione uma Classe:" /> <br/> 
+			        <p:selectOneMenu value="#{gerenciadorEventoBean.classeSelecionada}" converter="#{genericConverter}" panelStyle="width:150px"  
+			                         effect="fade" var="cl" style="width:160px"  filter="true" filterMatchMode="startsWith">  
+			            <f:selectItem itemLabel="Selecione..." itemValue="" />  
+			            <f:selectItems value="#{gerenciadorEventoBean.listaClasses}" var="classe" itemLabel="#{classe.nome}" itemValue="#{classe}"/>  
+			  
+			            <p:column>  
+			                #{cl.nome} - #{cl.turma}  
+			            </p:column>  
+			           <p:ajax event="change" listener="#{gerenciadorEventoBean.carregarEventosClasses()}" update=":formulario:mensagem:,formulario:tabela,:formulario:painelEventos"></p:ajax> 
+			        </p:selectOneMenu>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Eventos Cadastrados" id="tabela">  
+			
+				<p:dataTable var="item" height="200" value="#{gerenciadorEventoBean.eventoDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+					paginator="true" rows="#{gerenciadorEventoBean.registroPorPagina}" rendered="#{!empty gerenciadorEventoBean.classeSelecionada}"
+					paginatorPosition="bottom" rowKey="#{item.id}"
+					selection="#{gerenciadorEventoBean.eventosSelecionados}"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+					currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+						
+
+					<p:column selectionMode="multiple" style="width:2%" /> 
+									
+					<p:column headerText="Código">
+							<h:outputText value="#{item.codigoEvento}"/>
+					</p:column>
+					
+					<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Data Cadastro">
+						<h:outputText value="#{item.dataCadastro}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</p:column>
+					
+					
+					<p:column >  
+		                 <p:graphicImage value="/paginas/imagens/#{item.icone}" width="30" height="40" />  
+		            </p:column>	
+											
+				</p:dataTable>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="painelEventos">
+			
+			<h:panelGrid columns="5" rendered="#{!empty gerenciadorEventoBean.classeSelecionada}" >	
+			
+				<p:column>			
+					<center>
+						<p:commandButton value="Inserir Selecionado" action="#{gerenciadorEventoBean.inserirSelecionadosManha()}" update=":formulario:mensagem,:formulario:orderManha"/>
+						<br/>
+						<br/>
+					</center>
+					 <p:panel header="Eventos da Manhã" style="text-align:center">
+					    <p:dataGrid value="#{gerenciadorEventoBean.eventoClasseManha}" id="orderManha" emptyMessage="Não há eventos inseridos"
+					                    itemValue="#{eventoClasseManha}" converter="#{genericConverter}" var="eventoClasseManha" columns="2">  
+					  			
+					  			<h:panelGrid columns="3" style="width:100%">  
+								        <p:column style="width:25%">  
+								            <p:graphicImage value="/paginas/imagens/#{eventoClasseManha.evento.icone}" width="30" height="40" />  
+								        </p:column>  
+								  
+								        <p:column style="width:50%;">  
+								            #{eventoClasseManha.evento.codigoEvento} - #{eventoClasseManha.evento.nome}  
+								        </p:column>
+								          
+								         <p:column style="width:25%;">  
+								            <p:commandButton value="X" action="#{gerenciadorEventoBean.excluirSelecionadosManha(eventoClasseManha)}" update=":formulario:mensagem,:formulario:orderManha"/>
+								        </p:column>
+						        </h:panelGrid>				        
+					    </p:dataGrid> 
+				    </p:panel>					    
+				</p:column>	    
+				
+				<p:column><p:spacer width="130px" height="0"/></p:column>
+				
+				<p:column>			
+					<center>
+						<p:commandButton value="Inserir Selecionado" action="#{gerenciadorEventoBean.inserirSelecionadosTarde()}" update=":formulario:mensagem,:formulario:orderTarde"/>
+						<br/>
+						<br/>
+					</center>
+					 <p:panel header="Eventos da Tarde" style="text-align:center">
+					    <p:dataGrid value="#{gerenciadorEventoBean.eventoClasseTarde}" id="orderTarde" emptyMessage="Não há eventos inseridos"
+					                    itemValue="#{eventoClasseTarde}" converter="#{genericConverter}" var="eventoClasseTarde" columns="2">  
+					  			
+					  			<h:panelGrid columns="3" style="width:100%">  
+								        <p:column style="width:25%">  
+								            <p:graphicImage value="/paginas/imagens/#{eventoClasseTarde.evento.icone}" width="30" height="40" />  
+								        </p:column>  
+								  
+								        <p:column style="width:50%;">  
+								            #{eventoClasseTarde.evento.codigoEvento} - #{eventoClasseTarde.evento.nome}  
+								        </p:column>
+								          
+								         <p:column style="width:25%;">  
+								            <p:commandButton value="X" action="#{gerenciadorEventoBean.excluirSelecionadosTarde(eventoClasseTarde)}" update=":formulario:mensagem,:formulario:orderTarde"/>
+								        </p:column>
+						        </h:panelGrid>				        
+					    </p:dataGrid> 
+				    </p:panel>					    
+				</p:column>	
+				
+				<p:column><p:spacer width="130px" height="0"/></p:column>
+				
+				<p:column>			
+					<center>
+						<p:commandButton value="Inserir Selecionado" action="#{gerenciadorEventoBean.inserirSelecionadosOutros()}" update=":formulario:mensagem,:formulario:orderOutros"/>
+						<br/>
+						<br/>
+					</center>
+					 <p:panel header="Outros Eventos" style="text-align:center">
+					    <p:dataGrid value="#{gerenciadorEventoBean.eventoClasseOutros}" id="orderOutros" emptyMessage="Não há eventos inseridos"
+					                    itemValue="#{eventoClasseOutros}" converter="#{genericConverter}" var="eventoClasseOutros" columns="2">  
+					  			
+					  			<h:panelGrid columns="3" style="width:100%">  
+								        <p:column style="width:25%">  
+								            <p:graphicImage value="/paginas/imagens/#{eventoClasseOutros.evento.icone}" width="30" height="40" />  
+								        </p:column>  
+								  
+								        <p:column style="width:50%;">  
+								            #{eventoClasseOutros.evento.codigoEvento} - #{eventoClasseOutros.evento.nome}  
+								        </p:column>
+								          
+								         <p:column style="width:25%;">  
+								            <p:commandButton value="X" action="#{gerenciadorEventoBean.excluirSelecionadosOutros(eventoClasseOutros)}" update=":formulario:mensagem,:formulario:orderOutros"/>
+								        </p:column>
+						        </h:panelGrid>				        
+					    </p:dataGrid> 
+				    </p:panel>					    
+				</p:column>	
+		    </h:panelGrid>	
+		    
+		  	<br/>
+			<p:commandButton value="Salvar"  oncomplete="confirmation.show()" rendered="#{!empty gerenciadorEventoBean.classeSelecionada}" />		    		    		    			
+				
+		  </p:panel> 
+		  	
+  	 
+
+		</center>
+	
+		    <p:confirmDialog id="confirmDialog" message="Confirma Atualização?"  header="Iniciando processo de Atualização" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{gerenciadorEventoBean.salvarOuAtualizar()}"  update=":formulario:mensagem" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>
+		
+ </ui:define>
+ </ui:composition>
+</html>

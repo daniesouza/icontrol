@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/admin/templateAdmin.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Clientes Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+		 			<p:commandButton value="Novo" action="#{clienteBean.novo()}" oncomplete="cliente.show()" update=":formulario:mensagem,:formulario:gridCliente,:formulario:tabViewGrupo"></p:commandButton>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros" id="painel">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					<h:outputText value="Razão Social" />
+					<p:inputText value="#{clienteBean.filtro.razaoSocial}"/>
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{clienteBean.filtro.nome}" />
+
+					<h:outputText value="Tipo" />	
+					<p:selectOneMenu value="#{clienteBean.filtro.tipo}">
+						<f:selectItem itemLabel="" itemValue="0"/>
+						<f:selectItem itemLabel="PESSOA FISICA" itemValue="1"/>
+						<f:selectItem itemLabel="PESSOA JURIDICA" itemValue="2"/>
+						<p:ajax event="change" update=":formulario:painel"></p:ajax>
+					</p:selectOneMenu>	
+													
+					<h:outputText value="CPF" rendered="#{clienteBean.filtro.tipo == 1}"/>
+					<p:inputMask mask="99999999999" value="#{clienteBean.filtro.cpfCnpj}" rendered="#{clienteBean.filtro.tipo == 1}"/>	
+					
+					<h:outputText value="CNPJ" rendered="#{clienteBean.filtro.tipo == 2}"/>
+					<p:inputMask mask="99999999999999" value="#{clienteBean.filtro.cpfCnpj}"  rendered="#{clienteBean.filtro.tipo == 2}"/>			
+					
+					<h:outputText value="Telefone" />
+					<p:inputMask mask="?(99)-99999-9999" value="#{clienteBean.filtro.telefone}"> </p:inputMask>
+					
+					<h:outputText value="Data Cadastro" />
+					<p:calendar value="#{clienteBean.filtro.dtCad}"></p:calendar>
+					
+					<h:outputText value="Endereço" />
+					<p:inputText value="#{clienteBean.filtro.endereco}"></p:inputText>	
+					
+					<h:outputText value="Bairro" />
+					<p:inputText value="#{clienteBean.filtro.bairro}"></p:inputText>
+					
+					<h:outputText value="Cidade" />
+					<p:inputText value="#{clienteBean.filtro.cidade}"></p:inputText>
+					
+					<h:outputText value="CEP" />
+					<p:inputMask mask="99999999" value="#{clienteBean.filtro.cep}"/>	
+					
+					<h:outputText value="Estado" />
+					
+					<p:selectOneMenu value="#{clienteBean.filtro.estado}">				
+							<f:selectItem itemLabel=""   itemValue="0"/>
+							<f:selectItem itemValue="1"  itemLabel="AC - Acre"/>
+							<f:selectItem itemValue="2"  itemLabel="AL - Alagoas"/>
+							<f:selectItem itemValue="3"  itemLabel="AP - Amapá"/>
+							<f:selectItem itemValue="4"  itemLabel="AM - Amazonas"/>
+							<f:selectItem itemValue="5"  itemLabel="BA - Bahia"/>
+							<f:selectItem itemValue="6"  itemLabel="CE - Ceará"/>
+							<f:selectItem itemValue="7"  itemLabel="DF - Distrito Federal"/>
+							<f:selectItem itemValue="8"  itemLabel="ES - Espirito Santo"/>
+							<f:selectItem itemValue="9"  itemLabel="GO - Goiás"/>
+							<f:selectItem itemValue="10" itemLabel="MA - Maranhão"/>
+							<f:selectItem itemValue="11" itemLabel="MT - Mato Grosso"/>
+							<f:selectItem itemValue="12" itemLabel="MS - Mato Grosso do Sul"/>
+							<f:selectItem itemValue="13" itemLabel="MG - Minas Gerais"/>
+							<f:selectItem itemValue="14" itemLabel="PA - Pará"/>
+							<f:selectItem itemValue="15" itemLabel="PB - Paraiba"/>
+							<f:selectItem itemValue="16" itemLabel="PR - Paraná"/>
+							<f:selectItem itemValue="17" itemLabel="PE - Pernambuco"/>
+							<f:selectItem itemValue="18" itemLabel="PI - Piauí"/>
+							<f:selectItem itemValue="19" itemLabel="RJ - Rio de Janeiro"/>
+							<f:selectItem itemValue="20" itemLabel="RN - Rio Grande do Norte"/>
+							<f:selectItem itemValue="21" itemLabel="RS - Rio Grande do Sul"/>
+							<f:selectItem itemValue="22" itemLabel="RO - Rondônia"/>
+							<f:selectItem itemValue="23" itemLabel="RR - Roraima"/>
+							<f:selectItem itemValue="24" itemLabel="SC - Santa Catarina"/>
+							<f:selectItem itemValue="25" itemLabel="SP - São Paulo" />
+							<f:selectItem itemValue="26" itemLabel="SE - Sergipe"/>
+							<f:selectItem itemValue="27" itemLabel="TO - Tocantis"/>
+					</p:selectOneMenu>
+					
+					<h:outputText value="E-mail" />
+					<p:inputText value="#{clienteBean.filtro.email}"></p:inputText>		
+						
+					<h:outputText value="Status" />	
+					<p:selectOneMenu value="#{clienteBean.filtro.ativo}">
+						<f:selectItem itemLabel="ATIVADO" itemValue="true"/>
+						<f:selectItem itemLabel="DESATIVADO" itemValue="false"/>
+					</p:selectOneMenu>						
+									
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{clienteBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{clienteBean.clienteDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="#{clienteBean.registroPorPagina}" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+					
+					
+					<p:column headerText="Razão Social">
+							<p:outputLabel value="#{item.razaoSocial}"/>
+					</p:column>
+					
+					<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}"/>
+					</p:column>
+					
+					<p:column headerText="Tipo">
+							<h:outputText value="FISICA" rendered="#{item.tipo == 1}"/>
+							<h:outputText value="JURIDICA" rendered="#{item.tipo == 2}"/>
+					</p:column>
+					
+					<p:column headerText="CPF/CNPJ">
+							<h:outputText value="#{item.cpfCnpj}"/>
+					</p:column>
+					
+					<p:column headerText="Telefone">
+							<h:outputText value="#{item.telefone}"/>
+					</p:column>
+					
+					<p:column headerText="Data Cadastro">
+						<h:outputText value="#{item.dtCad}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3"/>
+						</h:outputText>
+					</p:column>															
+					
+					<p:column headerText="Endereço">
+							<h:outputText value="#{item.endereco}"/>
+					</p:column>	
+					
+					<p:column headerText="E-mail">
+							<h:outputText value="#{item.email}"/>
+					</p:column>	
+					
+					<p:column headerText="Status">
+							<h:outputText value="Ativado" rendered="#{item.ativo}"/>
+							<h:outputText value="Desativado" rendered="#{!item.ativo}"/>
+					</p:column>	
+					
+					<p:column> 
+						 <p:commandButton value="Alterar"  action="#{clienteBean.editar()}" oncomplete="cliente.show()" update=":formulario:mensagem,:formulario:gridCliente,:formulario:tabViewGrupo">
+            				  <f:setPropertyActionListener value="#{item}" target="#{clienteBean.entidade}" />						
+            			 </p:commandButton>
+					</p:column>
+							
+					<p:column rendered="false">
+						 <p:commandButton value="Excluir" oncomplete="confirmation.show()">
+							  <f:setPropertyActionListener value="#{item}" target="#{clienteBean.entidade}" />	
+						 </p:commandButton>         	   
+					</p:column>
+					
+				</p:dataTable>
+
+			</p:panel>
+
+		    <p:confirmDialog id="confirmDialog" message="Confirma Exclusão?"  header="Iniciando processo de exclusão" severity="alert" widgetVar="confirmation">  
+		          <center>
+			        <p:commandButton id="confirm" value="Sim" oncomplete="confirmation.hide()"  
+			                    action="#{clienteBean.excluir()}"  update=":formulario:mensagem,:formulario:tabela" />  
+			        <p:commandButton id="decline" value="Não" onclick="confirmation.hide()" type="button" />   
+		        </center>               
+		    </p:confirmDialog>  		 
+		 					
+		    	 
+			 <p:dialog header="cliente"  widgetVar="cliente" id="cliente" resizable="true" width="520" style="height: auto;" modal="true" >  
+		   			
+		   		 			
+				<h:panelGrid columns="2" id="gridCliente">
+					<h:outputText value="Razão Social *" />
+					<p:inputText value="#{clienteBean.entidade.razaoSocial}"/>
+					
+					<h:outputText value="Nome *" />
+					<p:inputText value="#{clienteBean.entidade.nome}" />
+
+					<h:outputText value="Tipo" />	
+					<p:selectOneMenu value="#{clienteBean.entidade.tipo}">
+					<f:selectItem itemLabel="" itemValue="0"/>
+						<f:selectItem itemLabel="PESSOA FISICA" itemValue="1"/>
+						<f:selectItem itemLabel="PESSOA JURIDICA" itemValue="2"/>
+						<p:ajax event="change" update="formulario:labelCpf,formulario:cpf,formulario:labelCnpj,formulario:cnpj"></p:ajax>
+					</p:selectOneMenu>	
+					
+					<h:panelGrid id="labelCpf">								
+						<h:outputText value="CPF *" rendered="#{clienteBean.entidade.tipo == 1}"/>
+					</h:panelGrid>	
+					
+					<h:panelGrid id="cpf">			
+						<p:inputMask mask="99999999999" value="#{clienteBean.entidade.cpfCnpj}"  rendered="#{clienteBean.entidade.tipo == 1}"/>	
+					</h:panelGrid>
+					
+					<h:panelGrid id="labelCnpj">				
+						<h:outputText value="CNPJ *" rendered="#{clienteBean.entidade.tipo == 2}" />
+					</h:panelGrid>
+						
+					<h:panelGrid id="cnpj" >				
+						<p:inputMask mask="99999999999999" value="#{clienteBean.entidade.cpfCnpj}" rendered="#{clienteBean.entidade.tipo == 2}"/>
+					</h:panelGrid>
+					
+					<h:outputText value="Telefone" />
+					<p:inputMask mask="?(99)-99999-9999" value="#{clienteBean.entidade.telefone}"> </p:inputMask>
+										
+					<h:outputText value="Endereço *" />
+					<p:inputText value="#{clienteBean.entidade.endereco}"></p:inputText>	
+						
+					<h:outputText value="Bairro *" />
+					<p:inputText value="#{clienteBean.entidade.bairro}"></p:inputText>
+					
+					<h:outputText value="Cidade *" />
+					<p:inputText value="#{clienteBean.entidade.cidade}"></p:inputText>
+					
+					<h:outputText value="CEP *" />
+					<p:inputMask mask="99999999" value="#{clienteBean.entidade.cep}"/>	
+					
+					<h:outputText value="Estado *" />
+					
+					<p:selectOneMenu value="#{clienteBean.entidade.estado}">				
+							<f:selectItem itemLabel=""   itemValue="0"/>
+							<f:selectItem itemValue="1"  itemLabel="AC - Acre"/>
+							<f:selectItem itemValue="2"  itemLabel="AL - Alagoas"/>
+							<f:selectItem itemValue="3"  itemLabel="AP - Amapá"/>
+							<f:selectItem itemValue="4"  itemLabel="AM - Amazonas"/>
+							<f:selectItem itemValue="5"  itemLabel="BA - Bahia"/>
+							<f:selectItem itemValue="6"  itemLabel="CE - Ceará"/>
+							<f:selectItem itemValue="7"  itemLabel="DF - Distrito Federal"/>
+							<f:selectItem itemValue="8"  itemLabel="ES - Espirito Santo"/>
+							<f:selectItem itemValue="9"  itemLabel="GO - Goiás"/>
+							<f:selectItem itemValue="10" itemLabel="MA - Maranhão"/>
+							<f:selectItem itemValue="11" itemLabel="MT - Mato Grosso"/>
+							<f:selectItem itemValue="12" itemLabel="MS - Mato Grosso do Sul"/>
+							<f:selectItem itemValue="13" itemLabel="MG - Minas Gerais"/>
+							<f:selectItem itemValue="14" itemLabel="PA - Pará"/>
+							<f:selectItem itemValue="15" itemLabel="PB - Paraiba"/>
+							<f:selectItem itemValue="16" itemLabel="PR - Paraná"/>
+							<f:selectItem itemValue="17" itemLabel="PE - Pernambuco"/>
+							<f:selectItem itemValue="18" itemLabel="PI - Piauí"/>
+							<f:selectItem itemValue="19" itemLabel="RJ - Rio de Janeiro"/>
+							<f:selectItem itemValue="20" itemLabel="RN - Rio Grande do Norte"/>
+							<f:selectItem itemValue="21" itemLabel="RS - Rio Grande do Sul"/>
+							<f:selectItem itemValue="22" itemLabel="RO - Rondônia"/>
+							<f:selectItem itemValue="23" itemLabel="RR - Roraima"/>
+							<f:selectItem itemValue="24" itemLabel="SC - Santa Catarina"/>
+							<f:selectItem itemValue="25" itemLabel="SP - São Paulo"/>
+							<f:selectItem itemValue="26" itemLabel="SE - Sergipe"/>
+							<f:selectItem itemValue="27" itemLabel="TO - Tocantis"/>
+					</p:selectOneMenu>
+										
+					<h:outputText value="E-mail" />
+					<p:inputText value="#{clienteBean.entidade.email}"></p:inputText>		
+					
+					<h:outputText value="Status" />	
+					<p:selectOneMenu value="#{clienteBean.entidade.ativo}">
+						<f:selectItem itemLabel="Ativado" itemValue="true"/>
+						<f:selectItem itemLabel="Desativado" itemValue="false"/>
+					</p:selectOneMenu>	
+           
+				</h:panelGrid>
+				
+				<p:tabView id="tabViewGrupo">
+					
+					  <p:tab title="Usuários">
+							<p:pickList value="#{clienteBean.usuarios}"
+								converter="#{genericConverter}" var="usuario"
+								iconOnly="true" itemValue="#{usuario}"
+								itemLabel="#{usuario.usuario}"
+								showTargetFilter="true"
+								showSourceFilter="true"
+								filterMatchMode="contains" >
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Usuários não inclusos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Usuários inclusos" />
+								</f:facet>
+							</p:pickList> 							
+						</p:tab>					
+					
+						<p:tab title="Arduino">						
+							<p:pickList id="pickListArduinos" value="#{clienteBean.arduinos}"
+								converter="#{genericConverter}" var="arduino"
+								iconOnly="true" itemValue="#{arduino}"
+								itemLabel="#{arduino.codigo} - #{arduino.nome}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Arduinos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Arduinos Adicionados" />
+								</f:facet>
+							</p:pickList>
+							 						
+						</p:tab>
+																	
+						
+				</p:tabView>				
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{clienteBean.salvarOuAtualizar()}"
+				 oncomplete="validarFecharModal(args,cliente)" update=":formulario:mensagem,:formulario:tabela,:formulario:gridCliente,:formulario:tabViewGrupo"/>
+			    
+	    	 </p:dialog>	
+	    	 
+	    	 
+	    	     	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

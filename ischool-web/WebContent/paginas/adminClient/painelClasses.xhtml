@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+ <ui:composition template="/templates/adminClient/templateAdminClient.xhtml">		
+  <ui:define name="corpoPagina">
+
+	 	<center>
+		 <p:panel>  <h3 align="center"> Classes Cadastrados </h3> </p:panel> 
+		 
+		 <p:panel>
+		 		
+		 		<div align="left">
+		 			<p:commandButton value="Novo" action="#{classeBean.novoClasseCliente}" oncomplete="classe.show()" update=":formulario:mensagem,:formulario:gridClasse,:formulario:tabViewProfessores"></p:commandButton>
+		 		</div> 
+		 
+		 </p:panel>		 
+		  <p:panel header="Filtros">  
+			
+				<h:panelGrid columns="8" cellpadding="2">
+					
+					<h:outputText value="Nome" />
+					<p:inputText value="#{classeBean.filtro.nome}" />			
+
+					
+					<h:outputText value="Turma" />
+					<p:inputText value="#{classeBean.filtro.turma}"></p:inputText>		
+										
+						
+				</h:panelGrid>
+				<br/>
+				<div align="center">
+					<p:commandButton value="Buscar" action="#{classeBean.pesquisar()}" update=":formulario:mensagem,:formulario:tabela"></p:commandButton>
+				</div>
+
+		  </p:panel> 
+		 	 
+		  <p:panel id="tabela">
+									
+				<p:dataTable var="item" height="200" value="#{classeBean.classeDataModel}" lazy="true" emptyMessage="Não há registros na tabela"
+				paginator="true" rows="#{classeBean.registroPorPagina}" 
+				paginatorPosition="bottom" rowKey="#{item.id}"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+				currentPageReportTemplate="Página {currentPage} de {totalPages} | {totalRecords} resultados" >					
+					
+									
+					<p:column headerText="Nome">
+							<h:outputText value="#{item.nome}"/>
+					</p:column>
+					
+			
+					<p:column headerText="Turma">
+						<h:outputText value="#{item.turma}" />
+					</p:column>				
+	
+					
+					<p:column headerText="Data Cadastro">
+						<h:outputText value="#{item.dataCadastro}">
+							<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy"/>
+						</h:outputText>
+					</p:column>	
+	
+					<p:column> 
+						 <p:commandButton value="Alterar" action="#{classeBean.editar}" oncomplete="classe.show()" update=":formulario:mensagem,:formulario:gridClasse,:formulario:tabViewProfessores">
+            				  <f:setPropertyActionListener value="#{item}" target="#{classeBean.entidade}" />						
+            			 </p:commandButton>
+					</p:column>
+											
+				</p:dataTable>
+
+			</p:panel>
+
+ 		 
+	    	 
+			 <p:dialog header="Classe"  widgetVar="classe" id="classe" resizable="true" width="620" style="height: auto;" modal="true" >  
+		   			
+		   		 			
+				<h:panelGrid columns="4" id="gridClasse">
+	
+
+					<h:column>
+						<h:outputFormat value="Nome:" />
+					</h:column>
+	
+					<h:column>
+						<p:inputText size="25" value="#{classeBean.entidade.nome}" />
+					</h:column>		
+					
+					<h:column>
+						<h:outputFormat value="Turma" />
+					</h:column>
+	
+					<h:column>
+						<p:inputText size="25" value="#{classeBean.entidade.turma}" />
+					</h:column>	
+					
+						
+				</h:panelGrid>	
+				
+				<p:tabView id="tabViewProfessores">
+						<p:tab title="Professores">
+							<p:pickList id="pickListProf" value="#{classeBean.professores}"
+								converter="#{genericConverter}" var="professor"
+								iconOnly="true" itemValue="#{professor}"
+								itemLabel="#{professor.usuario} - #{professor.nome}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Professores não inclusos" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Professores inclusos" />
+								</f:facet>
+							</p:pickList>
+						</p:tab>
+						<p:tab title="Alunos">
+							<p:pickList id="pickListAlunos" value="#{classeBean.alunos}"
+								converter="#{genericConverter}" var="aluno"
+								iconOnly="true" itemValue="#{aluno}"
+								itemLabel="#{aluno.codigoAluno} - #{aluno.nome}">
+				
+								<f:facet name="sourceCaption">
+									<h:outputText value="Alunos não inclusas" />
+								</f:facet>
+								<f:facet name="targetCaption">
+									<h:outputText value="Alunos inclusas" />
+								</f:facet>
+							</p:pickList>
+						</p:tab>						
+				</p:tabView>					
+							
+	
+				<br />
+	
+				<p:commandButton value="#{msgs.cadastrar}" title="#{msgs.clique_cadastrar}!" action="#{classeBean.salvarOuAtualizar()}" 
+				oncomplete="validarFecharModal(args,classe)" update=":formulario:mensagem,:formulario:tabela"/>
+			    
+	    	 </p:dialog>	    	 
+
+		</center>
+	
+		
+ </ui:define>
+ </ui:composition>
+</html>

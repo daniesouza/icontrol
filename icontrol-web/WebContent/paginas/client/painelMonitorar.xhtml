@@ -1,0 +1,509 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+ 	  xmlns:p="http://primefaces.org/ui"> 
+ 	  
+ 	<ui:composition template="/templates/client/templateClient.xhtml">
+
+	<ui:define name="corpoPagina">
+          	  <h:outputScript name="controladorCamera.js" library="js"  /> 
+         	 
+         	  <script type="text/javascript">
+
+		         	 $( document ).ready(function() {
+		
+		        		console.log( "ready!" );
+		         		console.log( $.browser); 
+
+
+		         		if ($.browser.msie){	
+			         		
+			         		$(".image_itens").each(function(index,obj){
+			         				obj.onclick();
+				         		});
+		         		}
+
+
+		         		setTimeout
+		         		(
+		         		    function()
+		         		    {
+
+
+				         		$(".image_itens").each(function(index,obj){
+
+			         		        if ( !obj.complete || !obj.naturalWidth )
+			         		        {
+			         		        	obj.src = "../imagens/fora-do-ar.gif";
+
+										var ident = obj.id;
+
+										var controles = document.getElementById(ident+"_controls");
+
+										//controles.style.display = 'none'
+										
+			         		        }
+				         		});
+
+		         		    },
+		         		    10000
+		         		);
+
+    			  
+		         	});	
+
+		            function iniciarMonitoramentoInternetExplorer(imgObj, ip){
+
+		            	
+						if ( $.browser.msie){		
+							
+					          setInterval(function(){
+						             imgObj.src= ip+Date.now();
+						            },150); 
+		                      					  
+						 }	
+
+		         	}	
+
+		            function pageLoaded()
+		            {
+
+		            } 
+
+					function changeTimer(timer,obj){
+
+						if(timer.cfg.frequency != 20){
+							timer.stop();
+							timer.timer = 20;
+							timer.cfg.frequency = 20;
+							timer.start();
+						}
+					}
+
+
+					function renderCarregando(obj,conectado){
+
+						if(conectado.value == "false"){
+							obj.style.display = 'inline'
+						}
+
+					}
+
+					function hideCarregando(obj,conectado){
+						if(conectado.value == "true"){
+							obj.style.display = 'none'
+						}
+					}
+
+					function renderLabels(){
+
+		         		$(".renderLabels").each(function(index,obj){
+		         			obj.click();
+		         		});
+					}
+					
+
+		        //   window.addEventListener("load", pageLoaded, false);
+		           
+
+
+		       //     $(window).bind('beforeunload',  function(e) {
+
+		     //       	if($.browser.chrome){
+
+				//			return ''+document.getElementById("formulario:desconectar").click();		            	
+
+			  //          }
+		       //     	document.getElementById("formulario:desconectar").click();
+		      //      });  
+		            
+         	   </script>	
+         	           	   
+		    		 
+ 
+		 <p:panel>		 		
+		 		<div align="left">
+			        <h:outputText value="Digite o Andar:" /> <br/> 
+					<p:inputText onkeydown="mascara(this,soNumeros)" value="#{monitorarBean.andar}" />
+					<p:commandButton value="Filtrar" actionListener="#{monitorarBean.filtrarArduino()}"  update=":formulario:mensagem,:formulario:painelMonitoramento"></p:commandButton>
+		 		</div> 				 
+		 </p:panel>	
+		 
+		  <p:panel header="ATALHOS" style="text-align:center" id="painelAtalhos">
+		  
+		   <p:dataGrid value="#{monitorarBean.listaAtalhos}" var="atalho" columns="6"  emptyMessage="Não há atalhos adicionados">  
+		   
+         		<p:column>  
+	            	
+	            	<table align="center">
+		            	<tr>
+		            		<td><p:graphicImage value="/paginas/imagens/icons/#{atalho.icone}" width="30" height="35"  /> 	</td>
+		            		<td><p:commandButton value="#{atalho.nome}" actionListener="#{monitorarBean.executarAtalho(atalho)}" update=":formulario:mensagem" oncomplete="renderLabels()"/></td>
+		            		 
+		            	</tr>						              	 
+	              	</table>
+
+	            </p:column> 
+		   
+		   </p:dataGrid>
+		  
+		  </p:panel>  
+
+		 <p:panel header="MONITORAMENTO" style="text-align:center" id="painelMonitoramento">  
+		 
+		 
+			<iframe name="action_zone" style="display: none"></iframe>
+			
+		
+			
+		 <p:dataGrid value="#{monitorarBean.arduinosAcesso}" var="arduino" columns="2" id="arduinos" emptyMessage="Não há arduinos adicionados">  
+  
+		    
+		    <p:panel styleClass="botoesCommand#{arduino.id}" rendered="#{!arduino.hide}">		    
+		    	 <input type="hidden" value="#{arduino.clienteSocket.connected}" id="status#{arduino.id}" />	    
+		    	 <b><p:outputLabel  value="CONECTADO" rendered="#{arduino.clienteSocket.connected}" style="color:#a1fa82; font-size:17px ; text-align:center" ></p:outputLabel></b>
+		    	 <b><p:outputLabel  value="DESCONECTADO" rendered="#{!arduino.clienteSocket.connected}" style="color:red; font-size:17px ; text-align:center" ></p:outputLabel></b>			    
+		    </p:panel>
+		    	   	
+		    		    		     	    		    		     	     		    	
+		    	<p:poll interval="2" async="true" rendered="#{!arduino.hide}" autoStart="true" widgetVar="timer#{arduino.id}"
+		    	 update="@(.botoesCommand#{arduino.id})" global="false" 
+		    	 onstart="renderCarregando(document.getElementById('imgCarregando#{arduino.id}'),document.getElementById('status#{arduino.id}')) ; changeTimer(timer#{arduino.id})"
+		    	 oncomplete="hideCarregando(document.getElementById('imgCarregando#{arduino.id}'),document.getElementById('status#{arduino.id}'))" 
+		    	 listener="#{monitorarBean.checkStatus(arduino)}"/>		    		    		     	    		    		     	     		    		     	     
+		        
+		        
+		        <p:panel header="#{arduino.nome} - #{arduino.andar}º Andar" rendered="#{!arduino.hide}" style="text-align:center">  
+	        	
+		        	<p:column>
+						<p:dataGrid value="#{arduino.cameras}" var="cam" columns="2" emptyMessage="Não há cameras adicionadas">
+						  	        
+					        <p:panel header="#{cam.codigo} - #{cam.nome}" style="text-align:center">   	
+					        			        					  
+					            <p:column> 
+															
+									<table border="0" cellpadding="0" cellspacing="0" align="center">
+											<tr>
+												<td bgcolor="black" align="center" valign="middle">
+										     	
+											     	<img alt="video" id="#{cam.codigo}" src="#{cam.ip}/videostream.cgi?user=#{cam.usuario}#{monitorarBean.caracterEspecial}pwd=#{cam.senha}" class="image_itens"
+											     	 onclick="iniciarMonitoramentoInternetExplorer(this, '#{cam.ip}/snapshot.cgi?user=#{cam.usuario}#{monitorarBean.caracterEspecial}pwd=#{cam.senha}#{monitorarBean.caracterEspecial}')" 
+											     	 width="380" height="270" />
+											     
+												</td>
+											</tr>
+									</table>
+								
+									<table width="360" id="#{cam.codigo}_controls" border="0" cellpadding="0" cellspacing="0"	bgcolor="#ccdae5" align="center" >
+								
+										<tr>
+								
+											<td>
+								
+												<table>
+													<tbody>
+														<tr>
+															<td height="25" colspan="2">
+																<table width="151" border="0" align="center" cellpadding="0"
+																	cellspacing="0" >
+																</table>
+															</td>
+														</tr>
+								
+								
+														<tr>
+															<td colspan="2">
+																<table width="0" border="0" cellspacing="0" cellpadding="0">
+																	<tbody>
+																		<tr>
+																			<td width="57">Resolução</td>
+																			<td width="56" align="center">
+																			<select id="resolution_sel#{cam.id}" onchange="javascript:set_resolution(0, this.value ,'#{cam.ip}', '#{cam.codigo}' , '#{cam.codigo}_controls','#{monitorarBean.loginPass}')">
+																			    <option value="8" selected="selected">360x270</option>
+																			    <option value="32">640x480</option>
+																			    <option value="48">800x600</option>
+																			</select>																		
+																			</td>
+																		</tr>
+																	<!-- 	<tr>
+																			<td width="57">Modo</td>
+																			<td width="56" align="center">
+																			<select 
+																				id="mode_sel" style="width: 80px" onchange="set_resolution(3,this.value,'#{cam.ip}')">
+																					<option value="0" selected="selected">&nbsp;50 HZ&nbsp;</option>
+																					<option value="1">&nbsp;60 HZ&nbsp;</option>
+																					<option value="2">outdoor</option>
+																			</select></td>
+																			<td></td>
+																		</tr> -->
+																		</tbody>
+																</table>
+								
+																<table>
+																	<tr>
+																		<td>
+																			<table width="0" border="0" cellspacing="0" cellpadding="0">
+																				<tbody>
+																					<tr>
+																						<td width="56" >Brilho</td>
+																						<td width="35">
+																						<img
+																							onclick="javascript:minus_brightness(brightness_input#{cam.id},'#{cam.ip}','#{monitorarBean.loginPass}')" disabled="disabed"
+																								src="../imagens/controlesCamera/a11.gif" width="24" height="15" /></td>
+																						<td width="22">
+																							<label> 
+																								<input name="brightness_input" readonly="readonly" type="text" value="6" id="brightness_input#{cam.id}" size="2" maxlength="2" />
+																							</label>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</td>
+																		<td><div align="center">
+																				<img onclick="javascript:plus_brightness(brightness_input#{cam.id},'#{cam.ip}','#{monitorarBean.loginPass}')"	src="../imagens/controlesCamera/a22.gif" width="24" height="15"/>
+																			</div></td>
+																	</tr>
+																	<tr>
+																		<td><table width="0" border="0" cellspacing="0"
+																				cellpadding="0">
+																				<tbody>
+																					<tr>
+																						<td width="56" >Contraste</td>
+																						<td width="35"><img	onclick="javascript:minus_contrast(contrast_input#{cam.id},'#{cam.ip}','#{monitorarBean.loginPass}')"
+																							src="../imagens/controlesCamera/a11.gif" width="24" height="15"/></td>
+																						<td width="22">
+																						<label> 
+																						<input name="contrast_input" readonly="readonly" type="text" value="4" id="contrast_input#{cam.id}" size="2" maxlength="2" />
+																						</label></td>
+																					</tr>
+																				</tbody>
+								
+																			</table></td>
+																		<td><div align="center">
+																				<img onclick="javascript:plus_contrast(contrast_input#{cam.id},'#{cam.ip}','#{monitorarBean.loginPass}')"
+																					src="../imagens/controlesCamera/a22.gif" width="24" height="15"/>
+																			</div></td>
+																	</tr>
+																	<tr>
+																		<td colspan="2"><table width="0" border="0"
+																				align="center" cellpadding="0" cellspacing="0">
+																				<tbody>
+																					<tr>
+																						<td width="70">
+																						<a href="javascript:default_all(resolution_sel#{cam.id},brightness_input#{cam.id},contrast_input#{cam.id},
+																						 '#{cam.ip}' , '#{cam.codigo}' , '#{cam.codigo}_controls','#{monitorarBean.loginPass}')">Default</a></td>
+																					</tr>
+																				</tbody>
+																			</table></td>
+																	</tr>
+														
+															</table>
+												
+											</td>
+											</tr>
+											</tbody>		
+								
+												</table>
+								
+											</td>
+								
+											<td>
+								
+												<table>
+								
+													<tr>
+														
+														<td colspan="2"><table width="146" border="0" cellspacing="0"	cellpadding="0">
+																<tbody>
+																	<tr>
+																		<td><table width="0" border="0" align="center" cellpadding="0" cellspacing="0">
+																				<tbody>
+																					<tr>
+																						<td><img onmousedown="leftup_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')" 
+																							onmouseup="leftup_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')"  src="../imagens/controlesCamera/s1_1.gif"
+																							name="Image22" width="42" height="35" border="0"
+																							/></td>
+																						<td><img onmousedown="up_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="up_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')"  src="../imagens/controlesCamera/s2_1.gif"
+																							name="Image23" width="22" height="35" border="0"
+																							/></td>
+																						<td><img onmousedown="rightup_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="rightup_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')"  src="../imagens/controlesCamera/s3_1.gif"
+																							name="Image24" width="38" height="35" border="0"
+																							/></td>
+																					</tr>
+																				</tbody>
+																			</table></td>
+																	</tr>
+																	<tr>
+																		<td><table width="0" border="0" align="center"
+																				cellpadding="0" cellspacing="0">
+																				<tbody>
+																					<tr>
+																						<td><img onmousedown="left_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="left_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')"  src="../imagens/controlesCamera/s4_1.gif"
+																							name="Image25" width="40" height="27" border="0"
+																							/></td>
+																						<td><img src="../imagens/controlesCamera/s5_1.gif" id="gocenter#{cam.id}"
+																							onclick="center_onclick('#{cam.ip}','#{monitorarBean.loginPass}')" name="Image42" width="24"
+																							height="27" border="0"/></td>
+																						<td><img onmousedown="right_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="right_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')" src="../imagens/controlesCamera/s6_1.gif"
+																							name="Image27" width="38" height="27" border="0"
+																							/></td>
+																					</tr>
+																				</tbody>
+																			</table></td>
+																	</tr>
+																	<tr>
+																		<td><table width="0" border="0" align="center"
+																				cellpadding="0" cellspacing="0">
+																				<tbody>
+																					<tr>
+																						<td><img onmousedown="leftdown_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="leftdown_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')"  src="../imagens/controlesCamera/s7_1.gif"
+																							name="Image28" width="40" height="39" border="0"
+																							/></td>
+																						<td><img onmousedown="down_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="down_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')" src="../imagens/controlesCamera/s8_1.gif"
+																							name="Image29" width="24" height="39" border="0"
+																							/></td>
+																						<td><img onmousedown="rightdown_onmousedown('#{cam.ip}','#{monitorarBean.loginPass}')"
+																							onmouseup="rightdown_onmouseup('#{cam.ip}','#{monitorarBean.loginPass}')" src="../imagens/controlesCamera/s9_1.gif"
+																							name="Image30" width="38" height="39" border="0"
+																							/></td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</td>
+																	</tr>
+																</tbody>
+													
+															</table></td>
+															
+													</tr>
+													
+												</table>
+								
+											</td>
+								
+											<td>
+								
+												<table>
+													<tbody>
+								
+														<tr >
+															<td colspan="2"><table width="0" border="0" align="center"	cellpadding="0" cellspacing="0">
+																	<tbody>
+																		<tr>
+																			<td width="42"><a href="javascript:vpatrol_onclick('#{cam.ip}','#{monitorarBean.loginPass}')">
+																					<img id="vpatrol#{cam.id}" src="../imagens/controlesCamera/d1.gif" name="vpatrol"
+																					width="31" height="23" border="0" title="Patrulha Vertical"/>
+																			</a></td>
+																			<td width="42"><a href="javascript:hpatrol_onclick('#{cam.ip}','#{monitorarBean.loginPass}')">
+																					<img id="hpatrol#{cam.id}" src="../imagens/controlesCamera/d2.gif" name="hpatrol"
+																					width="30" height="23" border="0"
+																					title="Patrulha Horizontal"/>
+																			</a></td>
+																		</tr>
+																	</tbody>
+																</table></td>
+														</tr>
+								
+														<tr>
+															<td ></td>
+														</tr>
+								
+														<tr>
+															<td colspan="2"><table width="0" border="0" align="center"	cellpadding="0" cellspacing="0" >
+																	<tbody>
+																		<tr>
+																			<td width="42"><a
+																				href="javascript:vpatrolstop_onclick('#{cam.ip}','#{monitorarBean.loginPass}')">
+																				<img id="vpatrolstop#{cam.id}" src="../imagens/controlesCamera/d4.gif" name="Image40"
+																					width="29" height="25" border="0"
+																					title="Parar Patrulha Vertical"/></a></td>
+																			<td width="42"><a
+																				href="javascript:hpatrolstop_onclick('#{cam.ip}','#{monitorarBean.loginPass}')"> 
+																				<img id="hpatrolstop#{cam.id}" src="../imagens/controlesCamera/d4.gif" name="Image41"
+																					width="29" height="25" border="0"
+																					title="Parar Patrulha Horizontal"/></a></td>
+																		</tr>
+																	</tbody>
+																</table>
+															</td>
+														</tr>
+								
+														<tr>
+															<td colspan="2">&nbsp;&nbsp;</td>
+														</tr>
+								
+													</tbody>
+												</table>
+								
+											</td>
+								
+										</tr>
+								
+									</table>
+
+					            </p:column>  				  
+					        </p:panel>						        
+					  	
+					     </p:dataGrid>
+					 </p:column>
+		        	
+		        	
+		        	<br/> 	<br/>        		  
+		        	
+		        	<p:column>
+		        		
+		        			<img  src="../imagens/ajaxloading.gif"  id="imgCarregando#{arduino.id}" style="display:none"/>	
+		        		
+							<p:dataGrid value="#{arduino.componentes}"   var="comp" columns="2" emptyMessage="Não há componentes adicionados">							
+													     
+								        
+						        <p:panel header="#{comp.nome}"  style="text-align:center" styleClass="botoesCommand#{arduino.id}">   
+						        	
+						        	<b><p:outputLabel  value="STATUS: #{comp.statusPorta}" style="font-size:17px ; text-align:center" styleClass="labelStatus#{arduino.id} labels" ></p:outputLabel></b>
+							     	
+							     	 <br/>
+							     	 <br/>
+							      	
+							        <p:dataGrid var="comando" value="#{comp.comandos}" columns="2" emptyMessage="Não há comandos adicionados">  							  
+							            <p:column>  
+							            	
+							            	<table align="center">
+								            	<tr>
+								            		<td><p:graphicImage value="/paginas/imagens/icons/#{comando.icone}" width="30" height="35"  /> 	</td>
+								            		<td><p:commandButton value="#{comando.nome}" action="#{monitorarBean.executarComando(comando,arduino,comp)}"
+								            		disabled="#{!arduino.clienteSocket.connected}" update=":formulario:mensagem, @(.labelStatus#{arduino.id})" />
+								            		
+								            		<p:commandButton value="render" style="display:none" styleClass="renderLabels" update="@(.labelStatus#{arduino.id})" />
+								            		
+								            		</td>
+								            		 
+								            	</tr>						              	 
+							              	</table>
+	
+							            </p:column>  	
+						            		  
+							        </p:dataGrid> 						        
+							        
+						        </p:panel>						        
+						  	
+						     </p:dataGrid>
+
+					 </p:column>    
+
+		        </p:panel>  
+		  
+		    </p:dataGrid> 
+		    
+		    </p:panel>	
+		</ui:define>
+	</ui:composition>
+
+</html>
